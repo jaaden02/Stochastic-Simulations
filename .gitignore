@@ -1,2 +1,4 @@
 # Virtual environments
 .venv/
+plots/
+__pycache__/
