@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Optional, Dict, List, Tuple
-from ..logging_utils import get_logger
+from ...logging_utils import get_logger
 
 logger = get_logger("plotting.diagnostics")
 

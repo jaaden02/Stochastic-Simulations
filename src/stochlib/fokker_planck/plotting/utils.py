@@ -3,8 +3,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Optional, Dict, List
-from ..setup import Grid
-from ..logging_utils import get_logger
+from ...setup import Grid
+from ...logging_utils import get_logger
 from .distributions import (
     plot_1d_distribution,
     plot_1d_comparison,

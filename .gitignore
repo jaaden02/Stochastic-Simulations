@@ -2,3 +2,5 @@
 .venv/
 plots/
 __pycache__/
+.github/
+.ipynb_checkpoints/

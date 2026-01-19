@@ -1,17 +1,20 @@
-from .setup import Grid, InitialCondition, DiffusionConfig, VelocitiesConfig
+from .setup import Grid, InitialCondition, DiffusionConfig, VelocitiesConfig, SimulationSetup
 from .boundary_conditions import BoundaryConditions
 from .logging_utils import configure_logging, get_logger
-from . import plotting
+from .sde import PathSimulator, StepSchemeAdvisor, PathDiagnostics
 
 __all__ = [
     'Grid',
     'InitialCondition',
     'DiffusionConfig',
     'VelocitiesConfig',
+    'SimulationSetup',
     'BoundaryConditions',
     'configure_logging',
     'get_logger',
-    'plotting',
+    'PathSimulator',
+    'StepSchemeAdvisor',
+    'PathDiagnostics',
 ]
 
 def hello() -> str:

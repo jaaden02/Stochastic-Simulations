@@ -322,12 +322,17 @@ class DiffusionConfig:
             raise TypeError(f"constants must be a dict, got {type(constants).__name__}")
         
         self.constants = constants.copy() if constants is not None else {}
-        
-        # Validate diffusion coefficients are finite
-        for axis, value in self.constants.items():
+        self.functions = functions.copy() if functions is not None else {}
+
+        # Promote callables in constants into functions; validate numeric constants
+        for axis, value in list(self.constants.items()):
+            if callable(value):
+                # Move to functions dict
+                self.functions[axis] = value
+                self.constants.pop(axis)
+                continue
             if not np.isfinite(value):
                 raise ValueError(f"Diffusion coefficient for axis '{axis}' must be finite, got {value}")
-        self.functions = functions.copy() if functions is not None else {}
 
         # Validate axes exist on grid
         present = set(grid.axis_names)
@@ -475,3 +480,53 @@ class VelocitiesConfig:
             return 0.0
         # Computes max(|mu|) for each axis and returns the global maximum
         return max(np.max(np.abs(field)) for field in mu_fields.values())
+
+
+class SimulationSetup:
+    """Factory to build either Fokker-Planck or path-based simulations."""
+
+    def __init__(
+        self,
+        mode: str = "fokker_planck",
+        grid: Optional[Grid] = None,
+        velocities: Optional[VelocitiesConfig] = None,
+        diffusions: Optional[DiffusionConfig] = None,
+        boundary_conditions=None,
+        drift=None,
+        diffusion=None,
+        diffusion_jacobian=None,
+        scheme: str = "auto",
+    ) -> None:
+        self.mode = mode
+        self.grid = grid
+        self.velocities = velocities
+        self.diffusions = diffusions
+        self.boundary_conditions = boundary_conditions
+        self.drift = drift
+        self.diffusion = diffusion
+        self.diffusion_jacobian = diffusion_jacobian
+        self.scheme = scheme
+
+    def build(self):
+        mode = self.mode.lower()
+        if mode == "fokker_planck":
+            from .fokker_planck.selector import SimulationEngine
+            if any(v is None for v in [self.grid, self.velocities, self.diffusions, self.boundary_conditions]):
+                raise ValueError("grid, velocities, diffusions, and boundary_conditions are required for Fokker-Planck mode")
+            return SimulationEngine(self.grid, self.velocities, self.diffusions, self.boundary_conditions)
+        if mode == "paths":
+            from .sde import PathSimulator, StepSchemeAdvisor
+            if self.drift is None or self.diffusion is None:
+                raise ValueError("drift and diffusion functions are required for path simulation")
+            scheme = StepSchemeAdvisor.choose_scheme(
+                scheme=self.scheme,
+                diffusion=self.diffusion,
+                diffusion_jacobian=self.diffusion_jacobian,
+            )
+            return PathSimulator(
+                drift=self.drift,
+                diffusion=self.diffusion,
+                diffusion_jacobian=self.diffusion_jacobian,
+                scheme=scheme,
+            )
+        raise ValueError(f"Unknown simulation mode '{self.mode}'")

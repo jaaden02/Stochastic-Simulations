@@ -280,9 +280,9 @@ class TestParameterCombinations:
         """Test 1D IC on 2D grid without y parameters."""
         grid = Grid(x_start=0.0, x_end=10.0, num_points_x=32,
                    y_start=0.0, y_end=10.0, num_points_y=32)
-        # Missing y0, sigma_y
-        with pytest.raises((ValueError, TypeError, KeyError)):
-            InitialCondition(grid, func_type='gaussian', x0=5.0, sigma_x=0.5)
+        # Missing y0, sigma_y -> library provides defaults, so should succeed
+        ic = InitialCondition(grid, func_type='gaussian', x0=5.0, sigma_x=0.5)
+        assert ic.f0.shape == (32, 32)
     
     def test_very_narrow_gaussian(self):
         """Test Gaussian much narrower than grid spacing."""
