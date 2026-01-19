@@ -320,6 +320,6 @@ If you use this library in your research, please cite:
 
 ## Contact
 
-- **Issues**: [GitHub Issues](https://github.com/jasperaden/Stochastic-Simulations/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/jasperaden/Stochastic-Simulations/discussions)
-- **Email**: jasper.aden@example.com (replace with your actual email)
+- **Issues**: [GitHub Issues](https://github.com/jaaden02/Stochastic-Simulations/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/jaaden02/Stochastic-Simulations/discussions)
+- **Email**: jaaden@ethz.ch

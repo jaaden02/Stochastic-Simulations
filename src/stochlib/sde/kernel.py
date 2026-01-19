@@ -1,4 +1,5 @@
 """Low-level stepping kernels for SDE path simulation."""
+
 from typing import Callable, Optional
 import numpy as np
 from numba import njit
@@ -38,7 +39,7 @@ def euler_maruyama_step(
     rng: np.random.Generator,
 ) -> Array:
     """One Euler-Maruyama step (diagonal noise).
-    
+
     Parameters
     ----------
     x : ndarray
@@ -53,7 +54,7 @@ def euler_maruyama_step(
         Time step
     rng : Generator
         NumPy random generator
-        
+
     Returns
     -------
     ndarray
@@ -77,7 +78,7 @@ def milstein_step(
     """One Milstein step for diagonal noise.
 
     If ``diffusion_jacobian`` is not provided, this falls back to Euler-Maruyama.
-    
+
     Parameters
     ----------
     x : ndarray
@@ -94,7 +95,7 @@ def milstein_step(
         Time step
     rng : Generator
         NumPy random generator
-        
+
     Returns
     -------
     ndarray
@@ -103,24 +104,24 @@ def milstein_step(
     mu = drift(x, t)
     sigma = diffusion(x, t)
     dw = rng.normal(0.0, np.sqrt(dt), size=sigma.shape)
-    
+
     if diffusion_jacobian is None:
         return _em_step_kernel(x, mu, sigma, dw, dt)
-    
+
     sigma_x = diffusion_jacobian(x, t)
     return _milstein_step_kernel(x, mu, sigma, sigma_x, dw, dt)
 
 
 def normalize_callable(spec, dim: int) -> Callable[[Array, float], Array]:
     """Return a callable drift/diffusion from scalar, array, or function.
-    
+
     Parameters
     ----------
     spec : callable, scalar, or array
         Function, constant, or array specification
     dim : int
         State dimension
-        
+
     Returns
     -------
     callable
@@ -132,9 +133,10 @@ def normalize_callable(spec, dim: int) -> Callable[[Array, float], Array]:
     const = np.asarray(spec, dtype=float)
     if const.shape == ():
         const = np.full((dim,), float(const))
+
     def _fn(x: Array, t: float) -> Array:
         shape = x.shape
         target_shape = shape if shape[-1] == dim else (shape[0], dim)
         return _as_array(const, target_shape)
-    return _fn
 
+    return _fn

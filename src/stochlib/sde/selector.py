@@ -1,4 +1,5 @@
 """Heuristics for choosing SDE step schemes."""
+
 from typing import Callable, Optional
 import numpy as np
 from ..logging_utils import get_logger

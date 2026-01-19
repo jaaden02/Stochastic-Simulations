@@ -3,12 +3,15 @@
 Provides automatic scheme selection based on problem characteristics and a high-level
 simulation engine for running Fokker-Planck PDE solutions.
 """
+
 from typing import Optional, Dict, Tuple, Any
 import numpy as np
 import logging
 import time
+
 try:
     from tqdm import tqdm
+
     HAS_TQDM = True
 except ImportError:
     HAS_TQDM = False
@@ -19,9 +22,10 @@ from .diagnostics import StabilityAnalyzer, SolutionDiagnostics
 
 logger = get_logger("fokker_planck.selector")
 
+
 class NumericalRegimeAdvisor:
     """Analyzes the physics to select the best numerical strategy."""
-    
+
     @staticmethod
     def recommend_schemes(
         grid: Grid,
@@ -30,7 +34,7 @@ class NumericalRegimeAdvisor:
         t: Optional[float] = 0.0,
     ) -> Dict[str, str]:
         """Recommend numerical schemes based on Peclet number analysis.
-        
+
         Parameters
         ----------
         grid : Grid
@@ -41,7 +45,7 @@ class NumericalRegimeAdvisor:
             Diffusion coefficient configuration
         t : float, optional
             Current time (for time-dependent coefficients)
-            
+
         Returns
         -------
         dict
@@ -51,50 +55,55 @@ class NumericalRegimeAdvisor:
         mu_fields: Dict = velocities.build_fields(t=t, evaluate=True)
         d_fields: Dict = diffusions.build_fields(t=t, evaluate=True)
         logger.debug("Recommend schemes: built fields at t=%.3e", t)
-        
+
         recommendations: Dict[str, str] = {}
         deltas: Dict[str, float] = grid.deltas
         for ax in grid.axis_names:
             dx: float = deltas[ax]
             max_mu: float = np.max(np.abs(mu_fields[ax]))
             max_d: float = np.max(d_fields[ax])
-            
+
             # 2. Calculate the Grid Peclet Number: Pe = (|v| * dx) / D
             pe_max: float = (max_mu * dx) / (max_d + 1e-16)
 
             logger.debug(
                 "Axis %s: dx=%.3e max_mu=%.3e max_d=%.3e Pe=%.3e",
-                ax, dx, max_mu, max_d, pe_max,
+                ax,
+                dx,
+                max_mu,
+                max_d,
+                pe_max,
             )
-            
+
             # 3. Heuristic Selection
             scheme_choice: str
             if max_d < 1e-14:
                 # Pure advection requires the stability of Upwind
-                scheme_choice = 'upwind_cn'
+                scheme_choice = "upwind_cn"
             elif pe_max > 2.0:
                 # High-speed flow: Central differences would oscillate
-                scheme_choice = 'upwind_cn'
+                scheme_choice = "upwind_cn"
             elif 0.1 < pe_max <= 2.0:
                 # The "Golden Zone" for Chang-Cooper stability
-                scheme_choice = 'chang_cooper'
+                scheme_choice = "chang_cooper"
             else:
                 # Highly diffusive: use 2nd-order Central accuracy
-                scheme_choice = 'central_cn'
-            
+                scheme_choice = "central_cn"
+
             recommendations[ax] = scheme_choice
-                
+
         return recommendations
-    
+
+
 class SimulationEngine:
     """Orchestrates the setup, validation, and execution of the simulation."""
-    
+
     def __init__(self, grid: Grid, velocities, diffusions, bc_manager) -> None:
         self.grid: Grid = grid
         self.velocities = velocities
         self.diffusions = diffusions
         self.bc_manager = bc_manager
-        
+
     def run(
         self,
         f0: np.ndarray,
@@ -109,7 +118,7 @@ class SimulationEngine:
         dt_user: Optional[float] = None,
     ) -> Dict[str, Any]:
         """Run the Fokker-Planck simulation.
-        
+
         Parameters
         ----------
         f0 : ndarray
@@ -134,7 +143,7 @@ class SimulationEngine:
         dt_user : float, optional
             User-specified timestep. If provided, used for validation. If None,
             automatically computed from t_array spacing.
-            
+
         Returns
         -------
         dict
@@ -153,7 +162,9 @@ class SimulationEngine:
         if dt_user is None:
             dt_user: float = t_array[1] - t_array[0] if len(t_array) > 1 else 0.01
         logger.debug("Computed dt_user=%.3e from t_array", dt_user)
-        report = StabilityAnalyzer.analyze(self.grid, self.velocities, self.diffusions, dt_user, t=t_array[0])
+        report = StabilityAnalyzer.analyze(
+            self.grid, self.velocities, self.diffusions, dt_user, t=t_array[0]
+        )
         # Pre-run cost estimate
         num_steps = max(1, len(t_array) - 1)
         per_array_gb = report.memory_gb
@@ -166,28 +177,32 @@ class SimulationEngine:
         est_seconds = est_ops / assumed_perf
         logger.debug(
             "Estimates: num_arrays=%d per_array_gb=%.3f ops=%.3e assumed_perf=%.3e",
-            num_arrays, per_array_gb, est_ops, assumed_perf,
+            num_arrays,
+            per_array_gb,
+            est_ops,
+            assumed_perf,
         )
-        
+
         # Enhanced pre-run report with full setup
         pre_lines = [
-                "=" * 65,
-                " " * 15 + "PRE-RUN SIMULATION REPORT",
-                "=" * 65,
-                "",
-                "GRID CONFIGURATION:",
-                f"  Active axes          : {', '.join(self.grid.axis_names)}",
-                f"  Total grid points    : {self.grid.total_points:,}",
-                f"  Grid deltas (Δ)      : {self.grid.deltas}",
-                f"  Volume element (dV)  : {self.grid.volume_element:.3e}",
-                "",
-                "BOUNDARY CONDITIONS:",
-            ]
+            "=" * 65,
+            " " * 15 + "PRE-RUN SIMULATION REPORT",
+            "=" * 65,
+            "",
+            "GRID CONFIGURATION:",
+            f"  Active axes          : {', '.join(self.grid.axis_names)}",
+            f"  Total grid points    : {self.grid.total_points:,}",
+            f"  Grid deltas (Δ)      : {self.grid.deltas}",
+            f"  Volume element (dV)  : {self.grid.volume_element:.3e}",
+            "",
+            "BOUNDARY CONDITIONS:",
+        ]
         for ax in self.grid.axis_names:
             bc_type = self.bc_manager.for_axis(ax)
             pre_lines.append(f"  {ax:6s} : {bc_type}")
-        
-        pre_lines.extend([
+
+        pre_lines.extend(
+            [
                 "",
                 "PHYSICS CONFIGURATION:",
                 f"  Max velocity (|μ|)   : {self.velocities.max_velocity_magnitude(t=t_array[0]):.3e}",
@@ -200,11 +215,13 @@ class SimulationEngine:
                 f"  Time window          : [t={t_array[0]:.3e}, t={t_array[-1]:.3e}]",
                 "",
                 "NUMERICAL SCHEMES:",
-            ])
+            ]
+        )
         for ax, scheme in auto_schemes.items():
             pre_lines.append(f"  {ax:6s} : {scheme}")
-        
-        pre_lines.extend([
+
+        pre_lines.extend(
+            [
                 "",
                 "DIAGNOSTICS:",
                 f"  Report interval      : every {report_interval} step(s)",
@@ -216,16 +233,18 @@ class SimulationEngine:
                 f"  Est. total memory    : {est_mem_gb:.4f} GB",
                 f"  Est. runtime         : {est_seconds:.4f} s (rough; peak may vary)",
                 "=" * 65,
-        ])
-        
+            ]
+        )
+
         pre_report = "\n".join(pre_lines)
         print("\n" + pre_report)
-        
+
         # Store reports for file saving
         all_reports = [pre_report + "\n"]
-        
+
         if confirm_run:
             import sys
+
             if sys.stdin is not None and sys.stdin.isatty():
                 resp = input("Proceed with run? [y/N]: ").strip().lower()
                 if resp not in ("y", "yes"):
@@ -239,9 +258,9 @@ class SimulationEngine:
 
         # C. THE EXECUTION PHASE
         # Initialize the high-performance solver
-        
+
         solver = FokkerPlanckSolver(self.bc_manager, schemes=auto_schemes)
-        
+
         if diagnostics is None:
             diagnostics = SolutionDiagnostics(
                 self.grid,
@@ -252,12 +271,24 @@ class SimulationEngine:
             )
         else:
             logger.debug("Using provided diagnostics instance")
-        
-        return self._time_loop(f0, t_array, solver, save_interval, diagnostics, all_reports, save_reports, report_file)
 
-    def _time_loop(self, f: np.ndarray, t_array: np.ndarray, solver, save_interval: int, diagnostics: SolutionDiagnostics, all_reports: list, save_reports: bool, report_file: Optional[str]) -> Dict[str, Any]:
+        return self._time_loop(
+            f0, t_array, solver, save_interval, diagnostics, all_reports, save_reports, report_file
+        )
+
+    def _time_loop(
+        self,
+        f: np.ndarray,
+        t_array: np.ndarray,
+        solver,
+        save_interval: int,
+        diagnostics: SolutionDiagnostics,
+        all_reports: list,
+        save_reports: bool,
+        report_file: Optional[str],
+    ) -> Dict[str, Any]:
         """Execute the time-stepping loop.
-        
+
         Parameters
         ----------
         f : ndarray
@@ -276,104 +307,117 @@ class SimulationEngine:
             Whether to save reports to a file
         report_file : str, optional
             File path for saving reports
-            
+
         Returns
         -------
         dict
             {"final": ndarray, "snapshots": list, "times": list, "summary": dict, "report_text": str}
         """
         import time
-        
+
         snapshots = []
         times = []
         f_curr = f.copy()
         logger.debug("Starting time loop with %d steps", len(t_array) - 1)
-        
+
         # Track total runtime
         start_time = time.time()
-        
+
         # Setup progress bar if available
         num_steps = len(t_array) - 1
-        iterator = tqdm(range(1, len(t_array)), desc="Simulating", unit="step", disable=not HAS_TQDM) if HAS_TQDM else range(1, len(t_array))
+        iterator = (
+            tqdm(range(1, len(t_array)), desc="Simulating", unit="step", disable=not HAS_TQDM)
+            if HAS_TQDM
+            else range(1, len(t_array))
+        )
 
         for idx in iterator:
             t_prev = t_array[idx - 1]
             t_curr = t_array[idx]
             dt = t_curr - t_prev
             if logger.isEnabledFor(logging.DEBUG):
-                logger.debug("Step %d/%d: t_prev=%.3e t_curr=%.3e dt=%.3e", idx, len(t_array)-1, t_prev, t_curr, dt)
+                logger.debug(
+                    "Step %d/%d: t_prev=%.3e t_curr=%.3e dt=%.3e",
+                    idx,
+                    len(t_array) - 1,
+                    t_prev,
+                    t_curr,
+                    dt,
+                )
             mu_fields = self.velocities.build_fields(t=t_prev, evaluate=True)
             d_fields = self.diffusions.build_fields(t=t_prev, evaluate=True)
             f_curr = solver.solve_step(f_curr, mu_fields, d_fields, dt)
 
             metrics = diagnostics.analyze_step(f_curr, t_curr)
-            metrics['time'] = t_curr
-            if metrics.get('warnings'):
-                logger.warning("t=%.3e warnings=%s", t_curr, metrics['warnings'])
+            metrics["time"] = t_curr
+            if metrics.get("warnings"):
+                logger.warning("t=%.3e warnings=%s", t_curr, metrics["warnings"])
 
             if (idx % save_interval) == 0:
                 snapshots.append(f_curr.copy())
                 times.append(t_curr)
                 logger.debug("Saved snapshot at step %d (t=%.3e)", idx, t_curr)
-            
+
             # Update progress bar with current time and mass
             if HAS_TQDM:
-                iterator.set_postfix({"t": f"{t_curr:.4f}", "mass": f"{metrics['mass']:.3e}"}, refresh=True)
+                iterator.set_postfix(
+                    {"t": f"{t_curr:.4f}", "mass": f"{metrics['mass']:.3e}"}, refresh=True
+                )
 
         elapsed_time = time.time() - start_time
         summary = diagnostics.summary()
-        
+
         # Build final report with runtime
         final_lines = [
-                "",
-                "=" * 65,
-                " " * 20 + "FINAL REPORT",
-                "=" * 65,
-                "",
-                "SIMULATION COMPLETION SUMMARY:",
-                f"  Total runtime        : {elapsed_time:.4f} s",
-                f"  Total steps completed: {summary['num_steps']}",
-                f"  Time window          : [t={t_array[0]:.3e}, t={t_array[-1]:.3e}]",
-                "",
-                "SOLUTION STATISTICS:",
-                f"  Total mass change    : {summary['total_mass_change']:.3e}",
-                f"  Mean mass            : {summary['mean_mass']:.6e}",
-                f"  Min solution value   : {summary['min_solution_value']:.3e}",
-                f"  Max solution value   : {summary['max_solution_value']:.3e}",
-                "",
-                "ENTROPY:",
-                f"  Initial entropy      : {summary['entropy_start']:.6e}",
-                f"  Final entropy        : {summary['entropy_end']:.6e}",
-                f"  Monotonically incr.  : {summary['entropy_is_monotonic']}",
-                "",
-                "QUALITY FLAGS:",
-                f"  Any negatives        : {summary['any_negative']}",
-                f"  Total warnings       : {summary['total_warnings']}",
-                f"  Critical warnings    : {len(summary['critical_warnings'])}",
-                "=" * 65,
+            "",
+            "=" * 65,
+            " " * 20 + "FINAL REPORT",
+            "=" * 65,
+            "",
+            "SIMULATION COMPLETION SUMMARY:",
+            f"  Total runtime        : {elapsed_time:.4f} s",
+            f"  Total steps completed: {summary['num_steps']}",
+            f"  Time window          : [t={t_array[0]:.3e}, t={t_array[-1]:.3e}]",
+            "",
+            "SOLUTION STATISTICS:",
+            f"  Total mass change    : {summary['total_mass_change']:.3e}",
+            f"  Mean mass            : {summary['mean_mass']:.6e}",
+            f"  Min solution value   : {summary['min_solution_value']:.3e}",
+            f"  Max solution value   : {summary['max_solution_value']:.3e}",
+            "",
+            "ENTROPY:",
+            f"  Initial entropy      : {summary['entropy_start']:.6e}",
+            f"  Final entropy        : {summary['entropy_end']:.6e}",
+            f"  Monotonically incr.  : {summary['entropy_is_monotonic']}",
+            "",
+            "QUALITY FLAGS:",
+            f"  Any negatives        : {summary['any_negative']}",
+            f"  Total warnings       : {summary['total_warnings']}",
+            f"  Critical warnings    : {len(summary['critical_warnings'])}",
+            "=" * 65,
         ]
-        
+
         final_report = "\n".join(final_lines)
         print("\n" + final_report)
         all_reports.append(final_report)
-        
+
         # Save reports to file if requested
         full_report_text = "\n".join(all_reports)
         if save_reports:
             if report_file is None:
                 report_file = "simulation_report.txt"
             try:
-                with open(report_file, 'w') as f:
+                with open(report_file, "w") as f:
                     f.write(full_report_text)
                 logger.debug("Reports saved to: %s", report_file)
             except Exception as e:
                 logger.warning("Failed to save reports to %s: %s", report_file, e)
-        
+
         return {
-            'final': f_curr,
-            'snapshots': snapshots,
-            'times': times,
-            'summary': summary,
-            'history': diagnostics.history,  # Include full history for detailed plotting
-            'report_text': full_report_text,
+            "final": f_curr,
+            "snapshots": snapshots,
+            "times": times,
+            "summary": summary,
+            "history": diagnostics.history,  # Include full history for detailed plotting
+            "report_text": full_report_text,
         }

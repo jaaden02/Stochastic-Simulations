@@ -27,7 +27,7 @@ def test_reflect_boundary_single_step():
     t_array = np.array([0.0, 1.0])
 
     result = sim.simulate(x0=x0, t_array=t_array, n_paths=1, save_paths=True)
-    x1 = result['paths'][0, 1, 0]
+    x1 = result["paths"][0, 1, 0]
 
     # Expected reflection: x_new = 0.9 + 0.3 = 1.2 -> reflect to 2*1.0 - 1.2 = 0.8
     assert np.isclose(x1, 0.8)

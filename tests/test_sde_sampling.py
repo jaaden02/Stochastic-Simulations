@@ -6,7 +6,7 @@ from stochlib.sde.sampling import sample_from_ic
 def test_sample_from_ic_gaussian_mean_and_bounds():
     rng = np.random.default_rng(42)
     grid = Grid(x_start=0.0, x_end=10.0, num_points_x=101)
-    ic = InitialCondition(grid, func_type='gaussian', x0=5.0, sigma_x=0.5)
+    ic = InitialCondition(grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
 
     samples = sample_from_ic(ic, n_samples=2000, rng=rng)
     assert samples.shape == (2000, 1)

@@ -3,6 +3,7 @@
 This module provides analysis functions for evaluating deterministic PDE solutions,
 including mass conservation, error metrics, stability checks, and solution quality.
 """
+
 from typing import Optional
 import numpy as np
 from ..logging_utils import get_logger
@@ -17,7 +18,7 @@ def check_mass_conservation(
     tolerance: float = 1e-6,
 ) -> dict:
     """Check mass conservation in deterministic solution.
-    
+
     Parameters
     ----------
     u : ndarray
@@ -28,7 +29,7 @@ def check_mass_conservation(
         Initial solution for comparison
     tolerance : float
         Tolerance for conservation check
-        
+
     Returns
     -------
     dict : Conservation metrics
@@ -39,21 +40,23 @@ def check_mass_conservation(
         - conserved: Boolean indicating if mass is conserved within tolerance
     """
     mass = np.sum(u) * dx
-    
+
     result = {"mass": mass}
-    
+
     if u_initial is not None:
         mass_initial = np.sum(u_initial) * dx
         mass_error = abs(mass - mass_initial)
         relative_error = mass_error / mass_initial if mass_initial != 0 else 0.0
-        
-        result.update({
-            "mass_initial": mass_initial,
-            "mass_error": mass_error,
-            "relative_error": relative_error,
-            "conserved": mass_error < tolerance,
-        })
-    
+
+        result.update(
+            {
+                "mass_initial": mass_initial,
+                "mass_error": mass_error,
+                "relative_error": relative_error,
+                "conserved": mass_error < tolerance,
+            }
+        )
+
     return result
 
 
@@ -63,11 +66,11 @@ def compute_cfl_number(
     dx: float,
 ) -> dict:
     """Compute CFL (Courant-Friedrichs-Lewy) number for stability analysis.
-    
+
     CFL = |v| * dt / dx
-    
+
     For stability: CFL ≤ 1 (for most explicit schemes)
-    
+
     Parameters
     ----------
     v : ndarray
@@ -76,7 +79,7 @@ def compute_cfl_number(
         Time step
     dx : float
         Grid spacing
-        
+
     Returns
     -------
     dict : CFL metrics
@@ -88,7 +91,7 @@ def compute_cfl_number(
     cfl = np.abs(v) * dt / dx
     cfl_max = np.max(cfl)
     cfl_mean = np.mean(cfl)
-    
+
     return {
         "cfl_max": cfl_max,
         "cfl_mean": cfl_mean,
@@ -103,7 +106,7 @@ def compute_solution_moments(
     dx: float,
 ) -> dict:
     """Compute statistical moments of the solution.
-    
+
     Parameters
     ----------
     u : ndarray
@@ -112,7 +115,7 @@ def compute_solution_moments(
         Grid points (n_grid,)
     dx : float
         Grid spacing
-        
+
     Returns
     -------
     dict : Moments
@@ -123,7 +126,7 @@ def compute_solution_moments(
         - skewness: Skewness (3rd standardized moment)
     """
     mass = np.sum(u) * dx
-    
+
     if mass == 0:
         return {
             "mass": 0.0,
@@ -132,20 +135,20 @@ def compute_solution_moments(
             "std": 0.0,
             "skewness": 0.0,
         }
-    
+
     # Normalize to probability distribution
     p = u / mass
-    
+
     # Moments
     mean = np.sum(x * p) * dx
-    variance = np.sum((x - mean)**2 * p) * dx
+    variance = np.sum((x - mean) ** 2 * p) * dx
     std = np.sqrt(variance)
-    
+
     if std > 0:
-        skewness = np.sum(((x - mean) / std)**3 * p) * dx
+        skewness = np.sum(((x - mean) / std) ** 3 * p) * dx
     else:
         skewness = 0.0
-    
+
     return {
         "mass": mass,
         "mean": mean,
@@ -157,14 +160,14 @@ def compute_solution_moments(
 
 def compute_l2_norm(u: np.ndarray, dx: float) -> float:
     """Compute L2 norm of solution.
-    
+
     Parameters
     ----------
     u : ndarray
         Solution
     dx : float
         Grid spacing
-        
+
     Returns
     -------
     float : L2 norm
@@ -178,7 +181,7 @@ def compute_error_metrics(
     dx: float,
 ) -> dict:
     """Compute error metrics between numerical and exact solutions.
-    
+
     Parameters
     ----------
     u_numeric : ndarray
@@ -187,7 +190,7 @@ def compute_error_metrics(
         Exact/reference solution
     dx : float
         Grid spacing
-        
+
     Returns
     -------
     dict : Error metrics
@@ -197,14 +200,14 @@ def compute_error_metrics(
         - relative_l2: Relative L2 error
     """
     error = u_numeric - u_exact
-    
+
     l1_error = np.sum(np.abs(error)) * dx
     l2_error = np.sqrt(np.sum(error**2) * dx)
     linf_error = np.max(np.abs(error))
-    
+
     u_exact_norm = compute_l2_norm(u_exact, dx)
     relative_l2 = l2_error / u_exact_norm if u_exact_norm > 0 else 0.0
-    
+
     return {
         "l1_error": l1_error,
         "l2_error": l2_error,
@@ -215,14 +218,14 @@ def compute_error_metrics(
 
 def check_positivity(u: np.ndarray, tolerance: float = 1e-10) -> dict:
     """Check if solution maintains positivity (physical constraint).
-    
+
     Parameters
     ----------
     u : ndarray
         Solution
     tolerance : float
         Tolerance for negative values
-        
+
     Returns
     -------
     dict : Positivity check results
@@ -232,7 +235,7 @@ def check_positivity(u: np.ndarray, tolerance: float = 1e-10) -> dict:
         - negative_locations: Indices of negative values
     """
     negative_mask = u < -tolerance
-    
+
     return {
         "all_positive": not np.any(negative_mask),
         "min_value": np.min(u),
@@ -243,16 +246,16 @@ def check_positivity(u: np.ndarray, tolerance: float = 1e-10) -> dict:
 
 def compute_total_variation(u: np.ndarray) -> float:
     """Compute total variation of solution.
-    
+
     TV(u) = sum|u[i+1] - u[i]|
-    
+
     Total variation diminishing (TVD) schemes satisfy: TV(u_new) ≤ TV(u_old)
-    
+
     Parameters
     ----------
     u : ndarray
         Solution
-        
+
     Returns
     -------
     float : Total variation
@@ -262,15 +265,15 @@ def compute_total_variation(u: np.ndarray) -> float:
 
 class DeterministicDiagnostics:
     """Diagnostic tracker for deterministic PDE solutions.
-    
+
     Tracks solution quality, conservation, and stability metrics over time.
-    
+
     Attributes
     ----------
     history : dict
         Dictionary storing diagnostic metrics over time
     """
-    
+
     def __init__(self):
         """Initialize diagnostic tracker."""
         self.history = {
@@ -283,7 +286,7 @@ class DeterministicDiagnostics:
             "min_value": [],
             "max_value": [],
         }
-    
+
     def update(
         self,
         t: float,
@@ -292,7 +295,7 @@ class DeterministicDiagnostics:
         dx: float,
     ):
         """Update diagnostics with current solution.
-        
+
         Parameters
         ----------
         t : float
@@ -307,7 +310,7 @@ class DeterministicDiagnostics:
         moments = compute_solution_moments(u, x, dx)
         l2 = compute_l2_norm(u, dx)
         tv = compute_total_variation(u)
-        
+
         self.history["time"].append(t)
         self.history["mass"].append(moments["mass"])
         self.history["mean"].append(moments["mean"])
@@ -316,16 +319,16 @@ class DeterministicDiagnostics:
         self.history["total_variation"].append(tv)
         self.history["min_value"].append(np.min(u))
         self.history["max_value"].append(np.max(u))
-    
+
     def get_history(self) -> dict:
         """Get diagnostic history as arrays.
-        
+
         Returns
         -------
         dict : Diagnostic history with numpy arrays
         """
         return {key: np.array(val) for key, val in self.history.items()}
-    
+
     def clear(self):
         """Clear diagnostic history."""
         for key in self.history:

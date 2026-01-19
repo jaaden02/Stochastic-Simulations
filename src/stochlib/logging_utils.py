@@ -7,6 +7,7 @@ Environment Variables:
     STOCHLIB_LOGLEVEL: Set logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
     STOCHLIB_LOG_FILE: Optional file path for logging to file
 """
+
 import logging
 import os
 import sys
@@ -48,7 +49,7 @@ def configure_logging(
     """
     env_level = os.getenv("STOCHLIB_LOGLEVEL")
     env_logfile = os.getenv("STOCHLIB_LOG_FILE")
-    
+
     resolved_level = level
     if resolved_level is None:
         if env_level:
@@ -66,7 +67,7 @@ def configure_logging(
     # Console handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(resolved_level)
-    
+
     # Choose format based on level
     if resolved_level == logging.DEBUG:
         console_format = _DEBUG_FORMAT
@@ -74,7 +75,7 @@ def configure_logging(
         console_format = _VERBOSE_FORMAT
     else:
         console_format = _DEFAULT_FORMAT
-    
+
     console_handler.setFormatter(logging.Formatter(console_format))
     logger.addHandler(console_handler)
 
@@ -135,9 +136,10 @@ def log_performance(logger: Optional[logging.Logger] = None):
     >>> def expensive_function(x, y):
     ...     return x + y
     """
+
     def decorator(func):
         _logger = logger or get_logger()
-        
+
         @wraps(func)
         def wrapper(*args, **kwargs):
             start_time = time.time()
@@ -151,6 +153,7 @@ def log_performance(logger: Optional[logging.Logger] = None):
                 elapsed = time.time() - start_time
                 _logger.error(f"{func.__name__} failed after {elapsed:.4f}s: {e}", exc_info=True)
                 raise
-        return wrapper
-    return decorator
 
+        return wrapper
+
+    return decorator

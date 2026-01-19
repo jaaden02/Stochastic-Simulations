@@ -19,16 +19,16 @@ from .utils import plot_simulation_summary
 
 __all__ = [
     # Distribution plots
-    'plot_1d_distribution',
-    'plot_1d_comparison',
-    'plot_1d_overlay',
-    'plot_2d_distribution',
+    "plot_1d_distribution",
+    "plot_1d_comparison",
+    "plot_1d_overlay",
+    "plot_2d_distribution",
     # Diagnostic plots
-    'plot_mass_conservation',
-    'plot_entropy',
-    'plot_convergence',
-    'plot_solution_bounds',
-    'plot_diagnostics_summary',
+    "plot_mass_conservation",
+    "plot_entropy",
+    "plot_convergence",
+    "plot_solution_bounds",
+    "plot_diagnostics_summary",
     # High-level utils
-    'plot_simulation_summary',
+    "plot_simulation_summary",
 ]

@@ -1,4 +1,5 @@
 """Sampling utilities for initial conditions."""
+
 import numpy as np
 from typing import Optional
 from ..setup import Grid, InitialCondition
@@ -13,7 +14,7 @@ def sample_from_distribution(
     rng: Optional[np.random.Generator] = None,
 ) -> Array:
     """Sample initial positions from a probability distribution on a grid.
-    
+
     Parameters
     ----------
     f : ndarray
@@ -24,45 +25,45 @@ def sample_from_distribution(
         Number of samples to draw
     rng : Generator, optional
         Random number generator
-        
+
     Returns
     -------
     ndarray
         Sampled positions, shape (n_samples, dim)
-        
+
     Notes
     -----
     Uses inverse transform sampling on the flattened distribution.
     """
     rng = rng or np.random.default_rng()
-    
+
     # Normalize distribution
     f_flat = f.flatten()
     f_flat = f_flat / np.sum(f_flat)
-    
+
     # Sample flat indices
     flat_indices = rng.choice(len(f_flat), size=n_samples, p=f_flat)
-    
+
     # Convert to multi-dimensional indices
     multi_indices = np.unravel_index(flat_indices, grid.shape)
-    
+
     # Convert indices to continuous positions
     dim = len(grid.axis_names)
     samples = np.zeros((n_samples, dim))
-    
+
     for i, ax in enumerate(grid.axis_names):
-        if ax == 'x':
+        if ax == "x":
             grid_ax = grid.x_grid
-        elif ax == 'y':
+        elif ax == "y":
             grid_ax = grid.y_grid
-        elif ax == 'z':
+        elif ax == "z":
             grid_ax = grid.z_grid
         else:
             raise ValueError(f"Unknown axis '{ax}'")
-        
+
         # Map grid index to position
         samples[:, i] = grid_ax[multi_indices[i]]
-    
+
     return samples
 
 
@@ -72,7 +73,7 @@ def sample_from_ic(
     rng: Optional[np.random.Generator] = None,
 ) -> Array:
     """Sample initial positions from an InitialCondition object.
-    
+
     Parameters
     ----------
     ic : InitialCondition
@@ -81,7 +82,7 @@ def sample_from_ic(
         Number of samples to draw
     rng : Generator, optional
         Random number generator
-        
+
     Returns
     -------
     ndarray

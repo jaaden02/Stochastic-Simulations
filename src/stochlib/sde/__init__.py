@@ -3,6 +3,7 @@
 Provides tools for simulating SDE paths using Euler-Maruyama and Milstein schemes,
 with diagnostics, sampling utilities, and comparison tools.
 """
+
 from .solver import PathSimulator
 from .selector import StepSchemeAdvisor
 from .diagnostic import PathDiagnostics

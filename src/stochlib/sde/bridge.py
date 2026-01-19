@@ -1,4 +1,5 @@
 """Bridge utilities to convert Fokker-Planck configs to SDE callables."""
+
 from typing import Callable, Tuple
 import numpy as np
 from ..setup import Grid, VelocitiesConfig, DiffusionConfig
@@ -13,14 +14,14 @@ def fp_to_sde_drift(
     grid: Grid,
 ) -> Callable[[Array, float], Array]:
     """Convert VelocitiesConfig to SDE drift callable.
-    
+
     Parameters
     ----------
     velocities : VelocitiesConfig
         Fokker-Planck velocity configuration
     grid : Grid
         Spatial grid (used to determine dimensionality)
-        
+
     Returns
     -------
     callable
@@ -28,24 +29,24 @@ def fp_to_sde_drift(
     """
     axis_names = grid.axis_names
     dim = len(axis_names)
-    
+
     def drift(x: Array, t: float) -> Array:
         # x can be (n_paths, dim) or (dim,)
-        single_path = (x.ndim == 1)
+        single_path = x.ndim == 1
         if single_path:
             x = x[None, :]  # (1, dim)
-        
+
         n_paths = x.shape[0]
         mu = np.zeros_like(x)
-        
+
         # Build velocity fields at time t
         vel_fields = velocities.build_fields(t=t, evaluate=False)
-        
+
         for i, ax in enumerate(axis_names):
             vel_spec = vel_fields.get(ax)
             if vel_spec is None:
                 continue
-            
+
             if callable(vel_spec):
                 # Evaluate at each path position
                 for path_idx in range(n_paths):
@@ -60,11 +61,11 @@ def fp_to_sde_drift(
             else:
                 # Constant velocity
                 mu[:, i] = float(vel_spec)
-        
+
         if single_path:
             return mu[0, :]
         return mu
-    
+
     return drift
 
 
@@ -73,19 +74,19 @@ def fp_to_sde_diffusion(
     grid: Grid,
 ) -> Callable[[Array, float], Array]:
     """Convert DiffusionConfig to SDE diffusion callable (diagonal).
-    
+
     Parameters
     ----------
     diffusions : DiffusionConfig
         Fokker-Planck diffusion configuration
     grid : Grid
         Spatial grid
-        
+
     Returns
     -------
     callable
         Diffusion function sigma(x, t) returning array of shape x.shape
-        
+
     Notes
     -----
     Returns sqrt(2*D) since SDE uses dX = mu*dt + sigma*dW while
@@ -93,23 +94,23 @@ def fp_to_sde_diffusion(
     """
     axis_names = grid.axis_names
     dim = len(axis_names)
-    
+
     def diffusion(x: Array, t: float) -> Array:
-        single_path = (x.ndim == 1)
+        single_path = x.ndim == 1
         if single_path:
             x = x[None, :]
-        
+
         n_paths = x.shape[0]
         sigma = np.zeros_like(x)
-        
+
         # Build diffusion fields at time t
         diff_fields = diffusions.build_fields(t=t, evaluate=False)
-        
+
         for i, ax in enumerate(axis_names):
             diff_spec = diff_fields.get(ax)
             if diff_spec is None:
                 continue
-            
+
             if callable(diff_spec):
                 for path_idx in range(n_paths):
                     coords = []
@@ -124,22 +125,22 @@ def fp_to_sde_diffusion(
                 # Constant diffusion
                 D_val = float(diff_spec)
                 sigma[:, i] = np.sqrt(2.0 * D_val)
-        
+
         if single_path:
             return sigma[0, :]
         return sigma
-    
+
     return diffusion
 
 
 def grid_bounds_from_grid(grid: Grid) -> Tuple[Array, Array]:
     """Extract boundary bounds from Grid.
-    
+
     Parameters
     ----------
     grid : Grid
         Spatial grid
-        
+
     Returns
     -------
     lower : ndarray
@@ -149,15 +150,15 @@ def grid_bounds_from_grid(grid: Grid) -> Tuple[Array, Array]:
     """
     lower = []
     upper = []
-    
-    if 'x' in grid.axis_names:
+
+    if "x" in grid.axis_names:
         lower.append(grid.x_start)
         upper.append(grid.x_end)
-    if 'y' in grid.axis_names:
+    if "y" in grid.axis_names:
         lower.append(grid.y_start)
         upper.append(grid.y_end)
-    if 'z' in grid.axis_names:
+    if "z" in grid.axis_names:
         lower.append(grid.z_start)
         upper.append(grid.z_end)
-    
+
     return np.array(lower), np.array(upper)

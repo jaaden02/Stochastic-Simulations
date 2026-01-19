@@ -15,10 +15,10 @@ def test_compare_distributions_identical_uniform():
     f2 = normalize_pdf(f2, grid)
 
     metrics = compare_distributions(f1, f2, grid)
-    assert metrics['l1_error'] < 1e-12
-    assert metrics['l2_error'] < 1e-12
-    assert metrics['kl_divergence'] < 1e-12
-    assert metrics['wasserstein_1d'] < 1e-12
+    assert metrics["l1_error"] < 1e-12
+    assert metrics["l2_error"] < 1e-12
+    assert metrics["kl_divergence"] < 1e-12
+    assert metrics["wasserstein_1d"] < 1e-12
 
 
 def test_compare_distributions_shifted_mass():
@@ -33,7 +33,7 @@ def test_compare_distributions_shifted_mass():
     f_paths = normalize_pdf(f_paths, grid)
 
     metrics = compare_distributions(f_ref, f_paths, grid)
-    assert metrics['l1_error'] > 0.0
-    assert metrics['l2_error'] > 0.0
-    assert metrics['kl_divergence'] > 0.0
-    assert metrics['wasserstein_1d'] > 0.0
+    assert metrics["l1_error"] > 0.0
+    assert metrics["l2_error"] > 0.0
+    assert metrics["kl_divergence"] > 0.0
+    assert metrics["wasserstein_1d"] > 0.0

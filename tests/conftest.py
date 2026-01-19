@@ -1,4 +1,5 @@
 """Shared fixtures for all tests."""
+
 import pytest
 import numpy as np
 import sys
@@ -15,6 +16,7 @@ from stochlib.setup import (
     VelocitiesConfig,
 )
 from stochlib.boundary_conditions import BoundaryConditions
+
 # NOTE: SimulationEngine imports numba which is very slow
 # Import it only in tests that need it
 
@@ -41,48 +43,52 @@ def medium_1d_grid():
 def simple_2d_grid():
     """Simple 2D grid for testing."""
     return Grid(
-        x_start=0.0, x_end=10.0, num_points_x=32,
-        y_start=0.0, y_end=10.0, num_points_y=32,
+        x_start=0.0,
+        x_end=10.0,
+        num_points_x=32,
+        y_start=0.0,
+        y_end=10.0,
+        num_points_y=32,
     )
 
 
 @pytest.fixture
 def gaussian_ic_1d(simple_1d_grid):
     """1D Gaussian initial condition."""
-    ic = InitialCondition(simple_1d_grid, func_type='gaussian', x0=5.0, sigma_x=0.5)
+    ic = InitialCondition(simple_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
     return ic.f0.copy()
 
 
 @pytest.fixture
 def uniform_ic_1d(simple_1d_grid):
     """1D uniform initial condition."""
-    ic = InitialCondition(simple_1d_grid, func_type='uniform')
+    ic = InitialCondition(simple_1d_grid, func_type="uniform")
     return ic.f0.copy()
 
 
 @pytest.fixture
 def gaussian_ic_fine(fine_1d_grid):
     """Fine Gaussian initial condition."""
-    ic = InitialCondition(fine_1d_grid, func_type='gaussian', x0=5.0, sigma_x=0.5)
+    ic = InitialCondition(fine_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
     return ic.f0.copy()
 
 
 @pytest.fixture
 def basic_setup_1d(simple_1d_grid):
     """Basic 1D setup: grid, IC, velocities, diffusion, BC."""
-    ic = InitialCondition(simple_1d_grid, func_type='gaussian', x0=5.0, sigma_x=0.4)
+    ic = InitialCondition(simple_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.4)
     f0 = ic.f0.copy()
-    
+
     velocities = VelocitiesConfig(simple_1d_grid, mu_x=-0.2)
-    diffusions = DiffusionConfig(simple_1d_grid, constants={'x': 0.5})
-    bc = BoundaryConditions(simple_1d_grid, bc_x='open')
-    
+    diffusions = DiffusionConfig(simple_1d_grid, constants={"x": 0.5})
+    bc = BoundaryConditions(simple_1d_grid, bc_x="open")
+
     return {
-        'grid': simple_1d_grid,
-        'f0': f0,
-        'velocities': velocities,
-        'diffusions': diffusions,
-        'bc': bc,
+        "grid": simple_1d_grid,
+        "f0": f0,
+        "velocities": velocities,
+        "diffusions": diffusions,
+        "bc": bc,
     }
 
 

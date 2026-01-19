@@ -1,4 +1,5 @@
 """Phase portrait visualization for SDE paths."""
+
 from typing import Optional
 import numpy as np
 import matplotlib.pyplot as plt
@@ -32,13 +33,13 @@ def plot_phase_portrait(
     n_paths, n_times, n_dims = paths.shape
     if dim_x >= n_dims or dim_y >= n_dims:
         raise ValueError(f"dims out of range for {n_dims}-dimensional paths")
-    
+
     n_paths_to_plot = min(n_paths, max_paths)
     for i in range(n_paths_to_plot):
         ax.plot(paths[i, :, dim_x], paths[i, :, dim_y], alpha=0.6)
-        ax.scatter(paths[i, 0, dim_x], paths[i, 0, dim_y], c='green', s=20, zorder=5)
-        ax.scatter(paths[i, -1, dim_x], paths[i, -1, dim_y], c='red', s=20, zorder=5)
-    
+        ax.scatter(paths[i, 0, dim_x], paths[i, 0, dim_y], c="green", s=20, zorder=5)
+        ax.scatter(paths[i, -1, dim_x], paths[i, -1, dim_y], c="red", s=20, zorder=5)
+
     ax.set_xlabel(f"X[{dim_x}]")
     ax.set_ylabel(f"X[{dim_y}]")
     ax.set_title("Phase Portrait")

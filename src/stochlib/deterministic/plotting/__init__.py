@@ -6,6 +6,7 @@ This submodule provides visualization functions for deterministic PDE solutions:
 - diagnostic_plots: Diagnostic time series (mass, norms, etc.)
 - comparison: Numerical vs exact solution comparisons
 """
+
 from .evolution import (
     plot_solution_evolution,
     plot_solution_snapshots,

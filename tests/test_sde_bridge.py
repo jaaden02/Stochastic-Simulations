@@ -17,7 +17,7 @@ def test_fp_to_sde_drift_constant():
 
 def test_fp_to_sde_diffusion_constant():
     grid = Grid(x_start=0.0, x_end=1.0, num_points_x=16)
-    diffusions = DiffusionConfig(grid, axes=['x'], constants={'x': 0.5})
+    diffusions = DiffusionConfig(grid, axes=["x"], constants={"x": 0.5})
     diffusion = fp_to_sde_diffusion(diffusions, grid)
 
     x = np.array([[0.2], [0.8]], dtype=float)

@@ -1,4 +1,5 @@
 """Trajectory visualization for SDE paths."""
+
 from typing import Optional, List
 import numpy as np
 import matplotlib.pyplot as plt
@@ -39,20 +40,20 @@ def plot_trajectories(
     ax = ax or plt.gca()
     n_paths, n_times, n_dims = paths.shape
     n_paths_to_plot = min(n_paths, max_paths)
-    
+
     if dims is None:
         dims = [dim]
-    
+
     if labels is None:
         labels = [f"dim {d}" for d in dims]
-    
+
     for idx, d in enumerate(dims):
         if d >= n_dims:
             raise ValueError(f"dim {d} out of range for {n_dims}-dimensional paths")
         for i in range(n_paths_to_plot):
             label = labels[idx] if i == 0 else None
             ax.plot(times, paths[i, :, d], alpha=0.5, label=label)
-    
+
     ax.set_xlabel("t")
     ax.set_ylabel("X_t")
     if len(dims) > 1 or labels[0] != "dim 0":
@@ -92,7 +93,7 @@ def plot_mean_variance(
     ax = ax or plt.gca()
     if dim >= mean.shape[1]:
         raise ValueError(f"dim {dim} out of range for {mean.shape[1]}-dimensional data")
-    
+
     label = label or f"mean (dim {dim})"
     ax.plot(times, mean[:, dim], label=label)
     std = np.sqrt(var[:, dim])

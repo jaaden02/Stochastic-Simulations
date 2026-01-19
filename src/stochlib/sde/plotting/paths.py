@@ -1,4 +1,5 @@
 """Individual path visualization for SDE paths with threshold-based sampling."""
+
 from typing import Optional
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,9 +16,9 @@ def plot_paths_with_threshold(
     title_suffix: str = "",
 ) -> tuple:
     """Plot individual paths with threshold check to avoid matplotlib overload.
-    
+
     When n_paths > max_paths_to_plot, randomly samples paths to display with a warning.
-    
+
     Parameters
     ----------
     paths : ndarray
@@ -37,7 +38,7 @@ def plot_paths_with_threshold(
         (fig, axes) to use existing figure. If None, creates new figure.
     title_suffix : str
         Suffix for plot title (e.g., "Absorb" or "Reflect")
-        
+
     Returns
     -------
     (fig, axes) : tuple of (Figure, Axes)
@@ -45,7 +46,7 @@ def plot_paths_with_threshold(
     """
     n_paths = paths.shape[0]
     rng = rng or np.random.default_rng()
-    
+
     # Determine which paths to plot
     if n_paths > max_paths_to_plot:
         indices = rng.choice(n_paths, size=max_paths_to_plot, replace=False)
@@ -55,28 +56,28 @@ def plot_paths_with_threshold(
         indices = np.arange(n_paths)
         n_plot = n_paths
         print(f"Plotting all {n_plot} paths")
-    
+
     # Create or use existing axes
     if figs_axes is None:
         fig, ax = plt.subplots(figsize=(10, 5))
     else:
         fig, ax = figs_axes
-    
+
     # Plot selected paths
     if alive_mask is not None:
         # Plot only alive portions (respects boundary absorption)
         for i in indices:
             mask_alive = alive_mask[i]
-            ax.plot(times[mask_alive], paths[i, mask_alive, dim], alpha=0.1, color='blue')
+            ax.plot(times[mask_alive], paths[i, mask_alive, dim], alpha=0.1, color="blue")
     else:
         # Plot full paths
         for i in indices:
-            ax.plot(times, paths[i, :, dim], alpha=0.1, color='blue')
-    
+            ax.plot(times, paths[i, :, dim], alpha=0.1, color="blue")
+
     # Formatting
-    ax.set_xlabel('t')
-    ax.set_ylabel('Position')
+    ax.set_xlabel("t")
+    ax.set_ylabel("Position")
     ax.set_title(f'Paths ({n_plot}/{n_paths} shown){" - " + title_suffix if title_suffix else ""}')
     ax.grid(True, alpha=0.3)
-    
+
     return fig, ax

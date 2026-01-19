@@ -31,9 +31,9 @@ def plot_simulation_summary(
     figname_prefix: str = "sim",
 ) -> Dict[str, str]:
     """Generate a complete set of summary plots for a simulation.
-    
+
     Creates distribution comparison and (optionally) diagnostic plots.
-    
+
     Parameters
     ----------
     grid : Grid
@@ -48,64 +48,65 @@ def plot_simulation_summary(
         Output directory for plots (default: current directory)
     figname_prefix : str
         Prefix for saved filenames (default: "sim")
-        
+
     Returns
     -------
     dict
         Dictionary mapping plot descriptions to output filenames
     """
     import os
+
     os.makedirs(output_dir, exist_ok=True)
-    
+
     output_files = {}
-    
+
     # 1. Distribution comparison
     if len(grid.axis_names) == 1:
         # 1D plots
         path = os.path.join(output_dir, f"{figname_prefix}_initial_vs_final_overlay.png")
         plot_1d_overlay(grid, f_initial, f_final, output_path=path)
-        output_files['1d_overlay'] = path
-        
+        output_files["1d_overlay"] = path
+
         path = os.path.join(output_dir, f"{figname_prefix}_initial_vs_final_sidebyside.png")
         plot_1d_comparison(grid, f_initial, f_final, output_path=path)
-        output_files['1d_comparison'] = path
+        output_files["1d_comparison"] = path
     else:
         # 2D plots
         path = os.path.join(output_dir, f"{figname_prefix}_initial.png")
         plot_2d_distribution(grid, f_initial, title="Initial Distribution", output_path=path)
-        output_files['2d_initial'] = path
-        
+        output_files["2d_initial"] = path
+
         path = os.path.join(output_dir, f"{figname_prefix}_final.png")
         plot_2d_distribution(grid, f_final, title="Final Distribution", output_path=path)
-        output_files['2d_final'] = path
-    
+        output_files["2d_final"] = path
+
     # 2. Diagnostic plots (if history provided)
     if history is not None and history:
         path = os.path.join(output_dir, f"{figname_prefix}_diagnostics.png")
         fig = plot_diagnostics_summary(history, output_path=path)
         if fig is not None:
-            output_files['diagnostics'] = path
-        
+            output_files["diagnostics"] = path
+
         path = os.path.join(output_dir, f"{figname_prefix}_mass.png")
         fig = plot_mass_conservation(history, output_path=path)
         if fig is not None:
-            output_files['mass'] = path
-        
+            output_files["mass"] = path
+
         path = os.path.join(output_dir, f"{figname_prefix}_entropy.png")
         fig = plot_entropy(history, output_path=path)
         if fig is not None:
-            output_files['entropy'] = path
-        
+            output_files["entropy"] = path
+
         path = os.path.join(output_dir, f"{figname_prefix}_convergence.png")
         fig = plot_convergence(history, output_path=path)
         if fig is not None:
-            output_files['convergence'] = path
-        
+            output_files["convergence"] = path
+
         path = os.path.join(output_dir, f"{figname_prefix}_bounds.png")
         fig = plot_solution_bounds(history, output_path=path)
         if fig is not None:
-            output_files['bounds'] = path
-    
+            output_files["bounds"] = path
+
     logger.info("Generated %d summary plots in %s/", len(output_files), output_dir)
-    
+
     return output_files

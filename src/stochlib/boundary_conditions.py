@@ -2,6 +2,7 @@
 
 Supports open, no-flux, and periodic boundary conditions for 1D, 2D, and 3D grids.
 """
+
 from typing import Optional
 import numpy as np
 
@@ -24,11 +25,13 @@ class BoundaryConditions:
     F_upper = bc.boundary_flux(m=mu, f_cell=f[-1], position='upper', axis='x')
     """
 
-    OPEN = 'open'
-    NOFLUX = 'noflux'
-    PERIODIC = 'periodic'
+    OPEN = "open"
+    NOFLUX = "noflux"
+    PERIODIC = "periodic"
 
-    def __init__(self, grid: Grid, bc_x: str = 'open', bc_y: Optional[str] = None, bc_z: Optional[str] = None) -> None:
+    def __init__(
+        self, grid: Grid, bc_x: str = "open", bc_y: Optional[str] = None, bc_z: Optional[str] = None
+    ) -> None:
         """Initialize boundary conditions for present axes.
 
         Parameters
@@ -46,21 +49,25 @@ class BoundaryConditions:
         self._axis_bc: dict = {}
 
         # Validate and assign x BC (always present)
-        self._axis_bc['x'] = self._validate_bc(bc_x)
+        self._axis_bc["x"] = self._validate_bc(bc_x)
 
         # y-axis if present
         if grid.y_grid is not None:
             bc_y = bc_y or self.OPEN
-            self._axis_bc['y'] = self._validate_bc(bc_y)
+            self._axis_bc["y"] = self._validate_bc(bc_y)
 
         # z-axis if present
         if grid.z_grid is not None:
             bc_z = bc_z or self.OPEN
-            self._axis_bc['z'] = self._validate_bc(bc_z)
+            self._axis_bc["z"] = self._validate_bc(bc_z)
 
     @staticmethod
     def _validate_bc(bc: str) -> str:
-        if bc not in (BoundaryConditions.OPEN, BoundaryConditions.NOFLUX, BoundaryConditions.PERIODIC):
+        if bc not in (
+            BoundaryConditions.OPEN,
+            BoundaryConditions.NOFLUX,
+            BoundaryConditions.PERIODIC,
+        ):
             raise ValueError("Boundary condition must be 'open', 'noflux', or 'periodic'")
         return bc
 
@@ -137,9 +144,8 @@ class BoundaryConditions:
         if bc == self.PERIODIC:
             return None
         # OPEN
-        if position == 'lower':
+        if position == "lower":
             return m * f_cell if m < 0.0 else 0.0
-        if position == 'upper':
+        if position == "upper":
             return m * f_cell if m > 0.0 else 0.0
         raise ValueError("position must be 'lower' or 'upper'")
-    

@@ -1,4 +1,5 @@
 """Simple test without imports."""
+
 import sys
 from pathlib import Path
 
@@ -15,6 +16,7 @@ def test_import():
     """Test that we can import the library."""
     try:
         import stochlib
+
         assert True
     except ImportError as e:
         assert False, f"Failed to import stochlib: {e}"

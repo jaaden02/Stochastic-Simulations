@@ -1,4 +1,5 @@
 """Path simulator for stochastic differential equations."""
+
 from typing import Callable, Optional, Dict, Any, Tuple
 import numpy as np
 from .kernel import euler_maruyama_step, milstein_step, normalize_callable
@@ -28,7 +29,7 @@ class PathSimulator:
         boundary_mode: Optional[str] = None,
     ) -> None:
         """Initialize path simulator.
-        
+
         Parameters
         ----------
         drift : callable
@@ -61,10 +62,12 @@ class PathSimulator:
         self.rng = rng or np.random.default_rng()
         self.bounds = bounds
         self.boundary_mode = boundary_mode
-        
+
         if boundary_mode is not None:
             if boundary_mode not in {"absorb", "reject", "reflect"}:
-                raise ValueError(f"boundary_mode must be 'absorb', 'reject', 'reflect', or None, got '{boundary_mode}'")
+                raise ValueError(
+                    f"boundary_mode must be 'absorb', 'reject', 'reflect', or None, got '{boundary_mode}'"
+                )
             if bounds is None:
                 raise ValueError("bounds required when boundary_mode is specified")
 
@@ -90,7 +93,7 @@ class PathSimulator:
             Runtime diagnostics collector.
         save_paths : bool
             If False, only summary stats are returned.
-            
+
         Returns
         -------
         dict
@@ -129,12 +132,12 @@ class PathSimulator:
         alive = np.ones(n_paths, dtype=bool)  # all paths start alive
         ever_exited = np.zeros(n_paths, dtype=bool)  # track if path ever exited (for "reject" mode)
         exit_times = np.full(n_paths, np.nan)  # time when each path exited
-        
+
         paths = None
         if save_paths:
             paths = np.zeros((n_paths, len(t_array), dim), dtype=float)
             paths[:, 0, :] = x
-        
+
         # Alive mask for all time steps
         alive_mask = np.ones((n_paths, len(t_array)), dtype=bool)
         n_alive_history = [np.sum(alive)]
@@ -146,7 +149,7 @@ class PathSimulator:
         for i, dt in enumerate(dt_array, start=1):
             t = t_array[i - 1]
             x = stepper(x, t, dt)
-            
+
             # Check boundaries
             if self.boundary_mode is not None:
                 if self.boundary_mode == "reflect":
@@ -156,28 +159,28 @@ class PathSimulator:
                 else:
                     exited_now = self._check_boundaries(x)
                     ever_exited |= exited_now
-                    
+
                     # Mark exit times
                     newly_exited = exited_now & alive
                     if np.any(newly_exited):
                         exit_times[newly_exited] = t_array[i]
-                    
+
                     if self.boundary_mode == "absorb":
                         # Paths stop contributing once they exit
                         alive &= ~exited_now
                     elif self.boundary_mode == "reject":
                         # Paths that ever exit are invalid
                         alive = ~ever_exited
-            
+
             alive_mask[:, i] = alive
             n_alive_history.append(np.sum(alive))
-            
+
             # Diagnostics on all paths (including dead ones for now)
             diagnostics.record(x, t_array[i])
-            
+
             if save_paths:
                 paths[:, i, :] = x
-            
+
             # Statistics computed only on alive paths
             if np.any(alive):
                 mean_history.append(np.mean(x[alive], axis=0))
@@ -199,10 +202,10 @@ class PathSimulator:
         if save_paths:
             result["paths"] = paths
         return result
-    
+
     def _check_boundaries(self, x: Array) -> Array:
         """Check if any paths have crossed boundaries.
-        
+
         Returns
         -------
         ndarray
@@ -210,11 +213,11 @@ class PathSimulator:
         """
         if self.bounds is None:
             return np.zeros(x.shape[0], dtype=bool)
-        
+
         lower, upper = self.bounds
         lower = np.asarray(lower, dtype=float)
         upper = np.asarray(upper, dtype=float)
-        
+
         # Check if any dimension is out of bounds
         below = np.any(x < lower, axis=1)
         above = np.any(x > upper, axis=1)
@@ -222,12 +225,12 @@ class PathSimulator:
 
     def _apply_reflection(self, x: Array) -> Array:
         """Apply elastic reflection at boundaries.
-        
+
         Parameters
         ----------
         x : ndarray
             Current positions, shape (n_paths, dim)
-            
+
         Returns
         -------
         ndarray
@@ -235,23 +238,23 @@ class PathSimulator:
         """
         if self.bounds is None:
             return x
-        
+
         lower, upper = self.bounds
         lower = np.asarray(lower, dtype=float)
         upper = np.asarray(upper, dtype=float)
-        
+
         # Reflect each dimension independently
         x_reflected = x.copy()
-        
+
         for d in range(x.shape[1]):
             # Lower boundary reflection
             below = x[:, d] < lower[d]
             x_reflected[below, d] = 2 * lower[d] - x[below, d]
-            
+
             # Upper boundary reflection
             above = x[:, d] > upper[d]
             x_reflected[above, d] = 2 * upper[d] - x[above, d]
-        
+
         return x_reflected
 
     def _get_stepper(self, dim: int):
@@ -262,9 +265,13 @@ class PathSimulator:
             diffusion_jac = normalize_callable(self.diffusion_jacobian, dim)
 
         if self.scheme == "milstein":
+
             def _step(x, t, dt):
                 return milstein_step(x, drift_fn, diffusion_fn, diffusion_jac, t, dt, self.rng)
+
         else:
+
             def _step(x, t, dt):
                 return euler_maruyama_step(x, drift_fn, diffusion_fn, t, dt, self.rng)
+
         return _step
