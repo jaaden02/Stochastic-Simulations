@@ -50,9 +50,8 @@ plots/
 *.png
 *.jpg
 *.gif
-examples/
-UV_GUIDE.md
 notes.md
+docs/internal/
 
-# GitHub
-.github/
+# Lock files (optional - uncomment if you don't want to track)
+# uv.lock

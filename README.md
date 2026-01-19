@@ -2,8 +2,11 @@
 
 A Python library for modeling stochastic processes through **Fokker-Planck PDEs** and **Monte Carlo SDE path simulation**.
 
-[![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
-[![Tests: 279 passing](https://img.shields.io/badge/tests-279%20passing-brightgreen.svg)]()
+[![Tests](https://github.com/jasperaden/Stochastic-Simulations/workflows/Tests/badge.svg)](https://github.com/jasperaden/Stochastic-Simulations/actions)
+[![codecov](https://codecov.io/gh/jasperaden/Stochastic-Simulations/branch/main/graph/badge.svg)](https://codecov.io/gh/jasperaden/Stochastic-Simulations)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ## Features
 
@@ -300,7 +303,7 @@ Where `D = ½σσᵀ` relates diffusion to noise intensity.
 
 ## License
 
-[Add your license here]
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Citation
 
@@ -315,10 +318,8 @@ If you use this library in your research, please cite:
 }
 ```
 
-## Contributing
-
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
 ## Contact
 
-[Add contact information]
+- **Issues**: [GitHub Issues](https://github.com/jasperaden/Stochastic-Simulations/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/jasperaden/Stochastic-Simulations/discussions)
+- **Email**: jasper.aden@example.com (replace with your actual email)
