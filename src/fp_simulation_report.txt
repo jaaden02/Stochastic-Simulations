@@ -41,7 +41,7 @@ RESOURCE ESTIMATES:
 =================================================================
 
 SIMULATION COMPLETION SUMMARY:
-  Total runtime        : 0.0697 s
+  Total runtime        : 7.5380 s
   Total steps completed: 200
   Time window          : [t=0.000e+00, t=1.000e+00]
 

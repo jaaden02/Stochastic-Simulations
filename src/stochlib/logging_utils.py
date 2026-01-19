@@ -2,14 +2,17 @@ import logging
 import os
 from typing import Optional
 
-_DEFAULT_FORMAT = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+# Simple format without timestamp for normal user usage
+_DEFAULT_FORMAT = "[%(levelname)s] %(name)s: %(message)s"
+# Detailed format with timestamp for debugging
+_VERBOSE_FORMAT = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 
 
 def configure_logging(level: Optional[int] = None, verbose: bool = False) -> logging.Logger:
     """Configure a shared stochlib logger with a single stream handler.
 
     - If ``level`` is provided, it takes precedence.
-    - Else if ``verbose`` is True, uses DEBUG; otherwise INFO.
+    - Else if ``verbose`` is True, uses DEBUG with timestamp format; otherwise INFO.
     - An environment variable ``STOCHLIB_LOGLEVEL`` (e.g., "DEBUG") can override defaults.
     """
     env_level = os.getenv("STOCHLIB_LOGLEVEL")
@@ -25,7 +28,9 @@ def configure_logging(level: Optional[int] = None, verbose: bool = False) -> log
 
     if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
         handler = logging.StreamHandler()
-        handler.setFormatter(logging.Formatter(_DEFAULT_FORMAT))
+        # Use verbose format (with timestamp) for DEBUG, simple format otherwise
+        fmt = _VERBOSE_FORMAT if resolved_level == logging.DEBUG else _DEFAULT_FORMAT
+        handler.setFormatter(logging.Formatter(fmt))
         handler.setLevel(resolved_level)
         logger.addHandler(handler)
 

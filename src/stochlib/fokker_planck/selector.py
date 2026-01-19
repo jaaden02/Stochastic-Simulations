@@ -1,6 +1,12 @@
 from typing import Optional, Dict, Tuple, Any
 import numpy as np
 import logging
+import time
+try:
+    from tqdm import tqdm
+    HAS_TQDM = True
+except ImportError:
+    HAS_TQDM = False
 from ..setup import Grid
 from .solver import FokkerPlanckSolver
 from ..logging_utils import get_logger
@@ -208,7 +214,7 @@ class SimulationEngine:
         ])
         
         pre_report = "\n".join(pre_lines)
-        logger.info("\n" + pre_report)
+        print("\n" + pre_report)
         
         # Store reports for file saving
         all_reports = [pre_report + "\n"]
@@ -224,7 +230,7 @@ class SimulationEngine:
 
         if not report.is_stable:
             raise ValueError(f"Stability Error: dt={dt_user:.2e} > dt_max={report.dt_max:.2e}")
-        logger.info("Stability OK: dt=%.3e (dt_max=%.3e)", dt_user, report.dt_max)
+        logger.debug("Stability OK: dt=%.3e (dt_max=%.3e)", dt_user, report.dt_max)
 
         # C. THE EXECUTION PHASE
         # Initialize the high-performance solver
@@ -280,8 +286,12 @@ class SimulationEngine:
         
         # Track total runtime
         start_time = time.time()
+        
+        # Setup progress bar if available
+        num_steps = len(t_array) - 1
+        iterator = tqdm(range(1, len(t_array)), desc="Simulating", unit="step", disable=not HAS_TQDM) if HAS_TQDM else range(1, len(t_array))
 
-        for idx in range(1, len(t_array)):
+        for idx in iterator:
             t_prev = t_array[idx - 1]
             t_curr = t_array[idx]
             dt = t_curr - t_prev
@@ -300,6 +310,10 @@ class SimulationEngine:
                 snapshots.append(f_curr.copy())
                 times.append(t_curr)
                 logger.debug("Saved snapshot at step %d (t=%.3e)", idx, t_curr)
+            
+            # Update progress bar with current time and mass
+            if HAS_TQDM:
+                iterator.set_postfix({"t": f"{t_curr:.4f}", "mass": f"{metrics['mass']:.3e}"}, refresh=True)
 
         elapsed_time = time.time() - start_time
         summary = diagnostics.summary()
@@ -335,7 +349,7 @@ class SimulationEngine:
         ]
         
         final_report = "\n".join(final_lines)
-        logger.info("\n" + final_report)
+        print("\n" + final_report)
         all_reports.append(final_report)
         
         # Save reports to file if requested
@@ -346,7 +360,7 @@ class SimulationEngine:
             try:
                 with open(report_file, 'w') as f:
                     f.write(full_report_text)
-                logger.info("Reports saved to: %s", report_file)
+                logger.debug("Reports saved to: %s", report_file)
             except Exception as e:
                 logger.warning("Failed to save reports to %s: %s", report_file, e)
         

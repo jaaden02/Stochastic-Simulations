@@ -96,17 +96,18 @@ class SolutionDiagnostics:
         boundary_conditions : BoundaryConditions, optional
             If provided, mass loss is permitted when any axis is 'open'.
         report_interval : int
-            Report every N steps (>=1). Default: 1 (every step).
+            Report every N steps (>=1). Set to 0 to disable reports. Default: 1 (every step).
         mass_tolerance : float
             Threshold for flagging mass change.
         """
         self.grid: Grid = grid
         self.volume_element: float = volume_element
         self.boundary_conditions: Optional[BoundaryConditions] = boundary_conditions
-        self.report_interval: int = max(1, int(report_interval))
+        self.report_interval: int = int(report_interval) if report_interval > 0 else 0
         self.mass_tolerance: float = mass_tolerance
         self.step_count: int = 0
         self._on_report = on_report
+        self._reports_disabled: bool = (report_interval == 0)
 
         # Mass loss allowed if any configured axis is open; otherwise closed system.
         self._mass_loss_allowed: bool = False
@@ -148,7 +149,7 @@ class SolutionDiagnostics:
             entropy, l2_change, linf_change, warnings, should_report
         """
         self.step_count += 1
-        should_report: bool = (self.step_count % self.report_interval) == 0
+        should_report: bool = (not self._reports_disabled) and (self.step_count % max(1, self.report_interval)) == 0
 
         metrics: Dict = {'should_report': should_report}
         step_warnings: list = []
@@ -250,7 +251,7 @@ class SolutionDiagnostics:
                         lines.append(f"  - {w}")
                 lines.append(f"report interval: every {self.report_interval} step(s)")
                 lines.append(footer)
-                logger.info("\n" + "\n".join(lines))
+                print("\n" + "\n".join(lines))
         
         return metrics
     

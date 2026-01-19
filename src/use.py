@@ -1,6 +1,9 @@
 """Minimal example: 1D Fokker-Planck with diagnostics and reporting.
 
 Run with: `python use.py` from this directory.
+
+Optional: Install tqdm for a nice progress bar during simulation:
+    pip install tqdm
 """
 
 import numpy as np
@@ -43,10 +46,11 @@ def main() -> None:
 
 	# 4) Simulation parameters
 	dt = 0.005
-	n_steps = 200
+	n_steps = 1000
 	t_final = n_steps * dt
-	report_interval = 20
-	save_reports = True
+	# Set report_interval: N = report every N steps, 0 = no reports
+	report_interval = 0
+	save_reports = False
 	report_file = "fp_simulation_report.txt"
 
 	# 5) Run simulation (schemes & stability handled automatically by engine)
@@ -62,11 +66,16 @@ def main() -> None:
 	)
 	final_f = result['final']
 	summary = result['summary']
-	log.info("Summary:")
+	
+	# 6) Print summary (without verbose logging)
+	print("\n" + "=" * 65)
+	print(" " * 20 + "SUMMARY")
+	print("=" * 65)
 	for k, v in summary.items():
-		log.info("  %s: %s", k, v)
+		print(f"  {k:25s} : {v}")
+	print("=" * 65 + "\n")
 
-	# 6) Generate plots using the plotting module
+	# 7) Generate plots using the plotting module
 	plot_files = plotting.plot_simulation_summary(
 		grid=grid,
 		f_initial=f_init,
@@ -75,12 +84,11 @@ def main() -> None:
 		output_dir="plots",
 		figname_prefix="fp_example",
 	)
-	log.info("Generated %d plots:", len(plot_files))
+	print(f"Generated {len(plot_files)} plots:")
 	for desc, path in plot_files.items():
-		log.info("  %s: %s", desc, path)
+		print(f"  {desc:20s} : {path}")
 
 
 if __name__ == "__main__":
 	print("Running minimal Fokker-Planck example...")
-	main()
 	main()

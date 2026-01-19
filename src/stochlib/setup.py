@@ -27,6 +27,50 @@ class Grid:
         num_points_z : int, optional
             Number of grid points in z-direction
         """
+        # Input validation for x-axis (always required)
+        if num_points_x <= 0:
+            raise ValueError(f"num_points_x must be > 0, got {num_points_x}")
+        if x_start >= x_end:
+            raise ValueError(f"x_start must be < x_end, got x_start={x_start}, x_end={x_end}")
+        if not np.isfinite(x_start) or not np.isfinite(x_end):
+            raise ValueError(f"x_start and x_end must be finite, got x_start={x_start}, x_end={x_end}")
+        
+        # Validate 2D parameters are complete if any are provided
+        y_params_count = sum(p is not None for p in [y_start, y_end, num_points_y])
+        if y_params_count > 0 and y_params_count < 3:
+            raise ValueError(f"If any y parameter is provided, all three (y_start, y_end, num_points_y) must be provided")
+        
+        # Validate 3D parameters are complete if any are provided
+        z_params_count = sum(p is not None for p in [z_start, z_end, num_points_z])
+        if z_params_count > 0 and z_params_count < 3:
+            raise ValueError(f"If any z parameter is provided, all three (z_start, z_end, num_points_z) must be provided")
+        
+        # Safeguard against excessively large grids (memory protection)
+        MAX_POINTS_PER_AXIS = 100_000  # 100k points per axis
+        MAX_TOTAL_POINTS = 100_000_000  # 100M total points
+        
+        if num_points_x > MAX_POINTS_PER_AXIS:
+            raise ValueError(f"num_points_x={num_points_x} exceeds maximum allowed ({MAX_POINTS_PER_AXIS}). "
+                           f"This would require excessive memory.")
+        
+        # Calculate total points to check memory requirements
+        total_points = num_points_x
+        if num_points_y is not None and num_points_y > 0:
+            if num_points_y > MAX_POINTS_PER_AXIS:
+                raise ValueError(f"num_points_y={num_points_y} exceeds maximum allowed ({MAX_POINTS_PER_AXIS}). "
+                               f"This would require excessive memory.")
+            total_points *= num_points_y
+        
+        if num_points_z is not None and num_points_z > 0:
+            if num_points_z > MAX_POINTS_PER_AXIS:
+                raise ValueError(f"num_points_z={num_points_z} exceeds maximum allowed ({MAX_POINTS_PER_AXIS}). "
+                               f"This would require excessive memory.")
+            total_points *= num_points_z
+        
+        if total_points > MAX_TOTAL_POINTS:
+            raise ValueError(f"Total grid points ({total_points:,}) exceeds maximum allowed ({MAX_TOTAL_POINTS:,}). "
+                           f"This would require excessive memory (~{total_points * 8 / 1e9:.1f} GB for float64).")
+        
         # Store domain boundaries (x always present)
         self.x_start, self.x_end = x_start, x_end
         self.num_points_x = num_points_x
@@ -187,6 +231,14 @@ class InitialCondition:
     
     def _gaussian_nd(self) -> np.ndarray:
         """Compute N-D Gaussian initial condition over present axes."""
+        # Validate sigma values are positive
+        if self.params.get('sigma_x', 1) <= 0:
+            raise ValueError(f"sigma_x must be > 0, got {self.params.get('sigma_x')}")
+        if self.grid.y_grid is not None and self.params.get('sigma_y', 1) <= 0:
+            raise ValueError(f"sigma_y must be > 0, got {self.params.get('sigma_y')}")
+        if self.grid.z_grid is not None and self.params.get('sigma_z', 1) <= 0:
+            raise ValueError(f"sigma_z must be > 0, got {self.params.get('sigma_z')}")
+        
         total_arg = (self.grid.X - self.params['x0'])**2 / (2 * self.params['sigma_x']**2)
         if self.grid.y_grid is not None:
             total_arg += (self.grid.Y - self.params['y0'])**2 / (2 * self.params['sigma_y']**2)
@@ -264,7 +316,17 @@ class DiffusionConfig:
         self.grid = grid
         # Default: diffuse along all present axes
         self.axes = axes[:] if axes is not None else grid.axis_names[:]
+        
+        # Validate constants is a dict
+        if constants is not None and not isinstance(constants, dict):
+            raise TypeError(f"constants must be a dict, got {type(constants).__name__}")
+        
         self.constants = constants.copy() if constants is not None else {}
+        
+        # Validate diffusion coefficients are finite
+        for axis, value in self.constants.items():
+            if not np.isfinite(value):
+                raise ValueError(f"Diffusion coefficient for axis '{axis}' must be finite, got {value}")
         self.functions = functions.copy() if functions is not None else {}
 
         # Validate axes exist on grid
