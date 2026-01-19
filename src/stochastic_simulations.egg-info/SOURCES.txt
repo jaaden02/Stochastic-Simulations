@@ -9,6 +9,10 @@ src/stochlib/__init__.py
 src/stochlib/boundary_conditions.py
 src/stochlib/logging_utils.py
 src/stochlib/setup.py
+src/stochlib/deterministic/__init__.py
+src/stochlib/deterministic/diagnostics.py
+src/stochlib/deterministic/solver.py
+src/stochlib/deterministic/plotting/__init__.py
 src/stochlib/fokker_planck/__init__.py
 src/stochlib/fokker_planck/diagnostics.py
 src/stochlib/fokker_planck/kernel.py
@@ -28,6 +32,10 @@ src/stochlib/sde/sampling.py
 src/stochlib/sde/selector.py
 src/stochlib/sde/solver.py
 src/stochlib/sde/plotting/__init__.py
+src/stochlib/sde/plotting/deterministic.py
+src/stochlib/sde/plotting/paths.py
+src/stochlib/sde/plotting/phase_portrait.py
+src/stochlib/sde/plotting/trajectories.py
 tests/test_boundary_conditions.py
 tests/test_configs.py
 tests/test_diagnostics.py

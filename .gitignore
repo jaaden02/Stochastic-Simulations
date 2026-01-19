@@ -4,3 +4,6 @@ plots/
 __pycache__/
 .github/
 .ipynb_checkpoints/
+.pytest_cache/
+.vscode/
+*.png
