@@ -1,3 +1,8 @@
+"""Core setup classes for spatial grids, initial conditions, and simulation configuration.
+
+This module defines the fundamental building blocks for setting up PDE simulations,
+including spatial discretization, initial conditions, and physical parameters.
+"""
 from typing import Optional, Dict, Any, List, Tuple, Callable
 import numpy as np
 

@@ -5,6 +5,9 @@ including mass conservation, error metrics, stability checks, and solution quali
 """
 from typing import Optional
 import numpy as np
+from ..logging_utils import get_logger
+
+logger = get_logger("deterministic.diagnostics")
 
 
 def check_mass_conservation(

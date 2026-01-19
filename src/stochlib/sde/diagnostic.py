@@ -1,7 +1,9 @@
 """Runtime diagnostics for SDE path simulations."""
 from typing import Dict, List, Optional
 import numpy as np
+from ..logging_utils import get_logger
 
+logger = get_logger("sde.diagnostic")
 Array = np.ndarray
 
 

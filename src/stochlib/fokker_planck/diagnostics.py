@@ -1,3 +1,8 @@
+"""Diagnostic tools for Fokker-Planck solutions.
+
+Provides stability analysis, solution quality metrics, and diagnostic reporting
+for Fokker-Planck PDE solutions.
+"""
 import numpy as np
 import logging
 from typing import Optional, Dict

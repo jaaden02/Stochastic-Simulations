@@ -1,3 +1,8 @@
+"""Numerical regime advisor and simulation engine for Fokker-Planck equations.
+
+Provides automatic scheme selection based on problem characteristics and a high-level
+simulation engine for running Fokker-Planck PDE solutions.
+"""
 from typing import Optional, Dict, Tuple, Any
 import numpy as np
 import logging

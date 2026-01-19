@@ -1,3 +1,8 @@
+"""Low-level numerical kernels for Fokker-Planck PDE stepping.
+
+Provides JIT-compiled kernels for efficient finite difference schemes including
+Chang-Cooper, upwind, and Lax-Wendroff methods.
+"""
 import numpy as np
 from numba import njit, prange
 from typing import Tuple

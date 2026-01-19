@@ -2,7 +2,9 @@
 from typing import Callable, Tuple
 import numpy as np
 from ..setup import Grid, VelocitiesConfig, DiffusionConfig
+from ..logging_utils import get_logger
 
+logger = get_logger("sde.bridge")
 Array = np.ndarray
 
 

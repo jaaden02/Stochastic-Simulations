@@ -1,9 +1,58 @@
 # Virtual environments
 .venv/
-plots/
+venv/
+env/
+
+# Python
 __pycache__/
-.github/
-.ipynb_checkpoints/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Testing
 .pytest_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+.hypothesis/
+
+# IDE
 .vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Project-specific
+plots/
 *.png
+*.jpg
+*.gif
+examples/
+UV_GUIDE.md
+notes.md
+
+# GitHub
+.github/

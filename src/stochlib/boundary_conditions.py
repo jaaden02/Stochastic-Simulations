@@ -1,3 +1,7 @@
+"""Boundary condition management for PDE solvers.
+
+Supports open, no-flux, and periodic boundary conditions for 1D, 2D, and 3D grids.
+"""
 from typing import Optional
 import numpy as np
 

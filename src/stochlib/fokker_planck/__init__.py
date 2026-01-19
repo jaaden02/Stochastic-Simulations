@@ -1,3 +1,8 @@
+"""Fokker-Planck PDE solver module.
+
+Provides numerical solvers for Fokker-Planck equations, stability analysis,
+regime selection, and diagnostic tools.
+"""
 from .solver import FokkerPlanckSolver
 from .diagnostics import StabilityAnalyzer, DiagnosticReport, SolutionDiagnostics
 from .selector import NumericalRegimeAdvisor, SimulationEngine

@@ -4,7 +4,9 @@ import numpy as np
 from .kernel import euler_maruyama_step, milstein_step, normalize_callable
 from .selector import StepSchemeAdvisor
 from .diagnostic import PathDiagnostics
+from ..logging_utils import get_logger
 
+logger = get_logger("sde.solver")
 Array = np.ndarray
 
 

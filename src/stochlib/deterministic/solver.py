@@ -8,8 +8,9 @@ Includes automatic scheme selection based on CFL condition and problem parameter
 from typing import Optional, Callable, Literal
 import numpy as np
 import warnings
+from ..logging_utils import get_logger
 
-
+logger = get_logger("deterministic.solver")
 SchemeType = Literal["auto", "upwind", "lax_wendroff", "beam_warming"]
 
 

@@ -1,3 +1,8 @@
+"""Fokker-Planck equation solver implementation.
+
+Provides the core FokkerPlanckSolver class for numerically solving Fokker-Planck PDEs
+using various finite difference schemes.
+"""
 import numpy as np
 import logging
 from typing import Dict, Tuple, Optional, List
