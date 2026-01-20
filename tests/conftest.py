@@ -125,7 +125,7 @@ def pytest_configure(config):
         raise pytest.exit(
             "Black formatting check failed. Run: uv run black --line-length 100 src/ tests/", 1
         )
-    print("✓ Black check passed")
+    print("[OK] Black check passed")
 
     # Run Ruff check
     print("\n" + "=" * 70)
@@ -138,7 +138,7 @@ def pytest_configure(config):
         print(result.stdout)
         print(result.stderr)
         raise pytest.exit("Ruff linting check failed. Run: uv run ruff check --fix src/ tests/", 1)
-    print("✓ Ruff check passed")
+    print("[OK] Ruff check passed")
 
     # Run mypy type check
     print("\n" + "=" * 70)
@@ -156,7 +156,7 @@ def pytest_configure(config):
             print(result.stderr)
         print("\nNote: mypy warnings detected (non-fatal, see above)")
     else:
-        print("✓ mypy check passed")
+        print("[OK] mypy check passed")
 
     # Run profiling examples
     print("\n" + "=" * 70)
@@ -179,7 +179,7 @@ def pytest_configure(config):
             print(result.stderr)
         raise pytest.exit("Profiling examples failed", 1)
     print(result.stdout)
-    print("✓ Profiling examples completed")
+    print("[OK] Profiling examples completed")
 
     print("\n" + "=" * 70)
     print("All quality checks passed! Running tests...")
