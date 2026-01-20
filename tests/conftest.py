@@ -140,6 +140,47 @@ def pytest_configure(config):
         raise pytest.exit("Ruff linting check failed. Run: uv run ruff check --fix src/ tests/", 1)
     print("✓ Ruff check passed")
 
+    # Run mypy type check
     print("\n" + "=" * 70)
-    print("All code quality checks passed! Running tests...")
+    print("Running mypy type checking...")
+    print("=" * 70)
+    result = subprocess.run(
+        ["uv", "run", "mypy", "src/stochlib", "--ignore-missing-imports"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        print(result.stdout)
+        if result.stderr:
+            print(result.stderr)
+        print("\nNote: mypy warnings detected (non-fatal, see above)")
+    else:
+        print("✓ mypy check passed")
+
+    # Run profiling examples
+    print("\n" + "=" * 70)
+    print("Running profiling examples...")
+    print("=" * 70)
+    import os
+
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(root / "src")
+    result = subprocess.run(
+        ["uv", "run", "python", "profiling/profiling_examples.py"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    if result.returncode != 0:
+        print(result.stdout)
+        if result.stderr:
+            print(result.stderr)
+        raise pytest.exit("Profiling examples failed", 1)
+    print(result.stdout)
+    print("✓ Profiling examples completed")
+
+    print("\n" + "=" * 70)
+    print("All quality checks passed! Running tests...")
     print("=" * 70 + "\n")

@@ -1,6 +1,7 @@
 """Plotting functions for diagnostic metrics and quality checks."""
 
 import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 from typing import Optional, Dict, Tuple
 from ...logging_utils import get_logger
 
@@ -12,7 +13,7 @@ def plot_mass_conservation(
     figsize: Tuple[float, float] = (10, 5),
     title: str = "Mass Conservation",
     output_path: Optional[str] = None,
-) -> plt.Figure:
+) -> Optional[Figure]:
     """Plot mass and mass change over time.
 
     Parameters
@@ -67,7 +68,7 @@ def plot_entropy(
     figsize: Tuple[float, float] = (10, 5),
     title: str = "Entropy Evolution",
     output_path: Optional[str] = None,
-) -> plt.Figure:
+) -> Optional[Figure]:
     """Plot entropy and entropy change over time.
 
     Parameters
@@ -83,8 +84,8 @@ def plot_entropy(
 
     Returns
     -------
-    plt.Figure
-        The figure object
+    Optional[Figure]
+        The figure object or None if data missing
     """
     if "entropy" not in history:
         logger.warning("'entropy' not found in history; skipping entropy plot")
@@ -122,7 +123,7 @@ def plot_convergence(
     figsize: Tuple[float, float] = (10, 5),
     title: str = "Solution Convergence (L2 & L∞)",
     output_path: Optional[str] = None,
-) -> plt.Figure:
+) -> Optional[Figure]:
     """Plot solution norms and convergence metrics.
 
     Parameters
@@ -138,8 +139,8 @@ def plot_convergence(
 
     Returns
     -------
-    plt.Figure
-        The figure object
+    Optional[Figure]
+        The figure object or None if data missing
     """
     if "l2_change" not in history and "linf_change" not in history:
         logger.warning("Convergence metrics not found in history; skipping convergence plot")
@@ -173,7 +174,7 @@ def plot_solution_bounds(
     figsize: Tuple[float, float] = (10, 5),
     title: str = "Solution Bounds (Min/Max)",
     output_path: Optional[str] = None,
-) -> plt.Figure:
+) -> Optional[Figure]:
     """Plot min and max values of solution over time (positivity check).
 
     Parameters
@@ -189,8 +190,8 @@ def plot_solution_bounds(
 
     Returns
     -------
-    plt.Figure
-        The figure object
+    Optional[Figure]
+        The figure object or None if data missing
     """
     if "min_val" not in history or "max_val" not in history:
         logger.warning("Solution bounds not found in history; skipping bounds plot")
@@ -229,7 +230,7 @@ def plot_diagnostics_summary(
     figsize: Tuple[float, float] = (14, 10),
     title: str = "Complete Diagnostics Summary",
     output_path: Optional[str] = None,
-) -> plt.Figure:
+) -> Optional[Figure]:
     """Plot a 2x2 grid of key diagnostic metrics.
 
     Parameters
@@ -245,8 +246,8 @@ def plot_diagnostics_summary(
 
     Returns
     -------
-    plt.Figure
-        The figure object
+    Optional[Figure]
+        The figure object or None if insufficient data
     """
     if not history or not any(
         key in history for key in ["mass", "entropy", "l2_change", "min_val"]

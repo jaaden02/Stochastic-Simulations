@@ -6,7 +6,7 @@ for Fokker-Planck PDE solutions.
 
 import numpy as np
 import logging
-from typing import Optional, Dict
+from typing import Optional, Dict, Callable
 from ..setup import Grid
 from ..boundary_conditions import BoundaryConditions
 from ..logging_utils import get_logger
@@ -90,7 +90,7 @@ class SolutionDiagnostics:
         boundary_conditions: Optional[BoundaryConditions] = None,
         report_interval: int = 1,
         mass_tolerance: float = 1e-3,
-        on_report: Optional[callable] = None,
+        on_report: Optional[Callable] = None,
     ):
         """Initialize runtime diagnostics tracker.
 

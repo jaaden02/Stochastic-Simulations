@@ -197,7 +197,7 @@ class PathSimulator:
             # Diagnostics on all paths (including dead ones for now)
             diagnostics.record(x, t_array[i])
 
-            if save_paths:
+            if save_paths and paths is not None:
                 paths[:, i, :] = x
 
             # Statistics computed only on alive paths
@@ -240,7 +240,8 @@ class PathSimulator:
         # Check if any dimension is out of bounds
         below = np.any(x < lower, axis=1)
         above = np.any(x > upper, axis=1)
-        return below | above
+        result: np.ndarray = below | above
+        return result
 
     def _apply_reflection(self, x: Array) -> Array:
         """Apply elastic reflection at boundaries.

@@ -399,7 +399,7 @@ class debug_context:
 
     def __init__(self, label: str):
         self.label = label
-        self.start_time = None
+        self.start_time: Optional[float] = None
 
     def __enter__(self):
         if DEBUG_MODE:
@@ -413,7 +413,7 @@ class debug_context:
         if DEBUG_MODE:
             import time
 
-            elapsed = time.time() - self.start_time
+            elapsed = time.time() - (self.start_time or 0.0)
             if exc_type is not None:
                 logger.error(f"DEBUG: {self.label} failed after {elapsed:.4f}s: {exc_val}")
             else:

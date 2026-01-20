@@ -18,7 +18,8 @@ def _as_array(value, target_shape) -> Array:
 @njit
 def _em_step_kernel(x: Array, mu: Array, sigma: Array, dw: Array, dt: float) -> Array:
     """Core Euler-Maruyama update (numba-accelerated)."""
-    return x + mu * dt + sigma * dw
+    result: Array = x + mu * dt + sigma * dw
+    return result
 
 
 @njit
@@ -27,7 +28,8 @@ def _milstein_step_kernel(
 ) -> Array:
     """Core Milstein update (numba-accelerated)."""
     correction = 0.5 * sigma * sigma_x * (dw * dw - dt)
-    return x + mu * dt + sigma * dw + correction
+    result: Array = x + mu * dt + sigma * dw + correction
+    return result
 
 
 def euler_maruyama_step(
@@ -63,7 +65,8 @@ def euler_maruyama_step(
     mu = drift(x, t)
     sigma = diffusion(x, t)
     dw = rng.normal(0.0, np.sqrt(dt), size=sigma.shape)
-    return _em_step_kernel(x, mu, sigma, dw, dt)
+    result: Array = _em_step_kernel(x, mu, sigma, dw, dt)
+    return result
 
 
 def milstein_step(
@@ -106,10 +109,12 @@ def milstein_step(
     dw = rng.normal(0.0, np.sqrt(dt), size=sigma.shape)
 
     if diffusion_jacobian is None:
-        return _em_step_kernel(x, mu, sigma, dw, dt)
+        result: Array = _em_step_kernel(x, mu, sigma, dw, dt)
+        return result
 
     sigma_x = diffusion_jacobian(x, t)
-    return _milstein_step_kernel(x, mu, sigma, sigma_x, dw, dt)
+    result_mil: Array = _milstein_step_kernel(x, mu, sigma, sigma_x, dw, dt)
+    return result_mil
 
 
 def normalize_callable(spec, dim: int) -> Callable[[Array, float], Array]:
@@ -128,7 +133,8 @@ def normalize_callable(spec, dim: int) -> Callable[[Array, float], Array]:
         Function accepting (x, t) and returning array
     """
     if callable(spec):
-        return spec
+        result_fn: Callable[[Array, float], Array] = spec
+        return result_fn
     # Constant drift/diffusion
     const = np.asarray(spec, dtype=float)
     if const.shape == ():
@@ -138,5 +144,7 @@ def normalize_callable(spec, dim: int) -> Callable[[Array, float], Array]:
         shape = x.shape
         target_shape = shape if shape[-1] == dim else (shape[0], dim)
         return _as_array(const, target_shape)
+
+    return _fn
 
     return _fn

@@ -26,12 +26,11 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -e ".[dev]"
-        pip install pytest pytest-cov
+        pip install uv
 
-    - name: Run tests
+    - name: Run tests with quality checks
       run: |
-        pytest --cov=stochlib --cov-report=xml --cov-report=term-missing
+        uv run pytest --cov=stochlib --cov-report=xml --cov-report=term-missing
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
@@ -51,13 +50,20 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Install dependencies
+    - name: Install uv
       run: |
         python -m pip install --upgrade pip
-        pip install "black[jupyter]" ruff
+        pip install uv
 
     - name: Check formatting with Black
-      run: black --check --line-length 100 src/ tests/
+      run: uv run black --check --line-length 100 src/ tests/
 
     - name: Lint with Ruff
-      run: ruff check src/ tests/
+      run: uv run ruff check src/ tests/
+
+    - name: Type check with mypy
+      run: uv run mypy src/stochlib --ignore-missing-imports
+      continue-on-error: true
+
+    - name: Run profiling examples
+      run: uv run python profiling/profiling_examples.py

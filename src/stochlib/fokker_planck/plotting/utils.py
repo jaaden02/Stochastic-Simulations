@@ -81,18 +81,18 @@ def plot_simulation_summary(
     # 2. Diagnostic plots (if history provided)
     if history is not None and history:
         path = os.path.join(output_dir, f"{figname_prefix}_diagnostics.png")
-        fig = plot_diagnostics_summary(history, output_path=path)
-        if fig is not None:
+        diag_fig = plot_diagnostics_summary(history, output_path=path)
+        if diag_fig is not None:
             output_files["diagnostics"] = path
 
         path = os.path.join(output_dir, f"{figname_prefix}_mass.png")
-        fig = plot_mass_conservation(history, output_path=path)
-        if fig is not None:
+        mass_fig = plot_mass_conservation(history, output_path=path)
+        if mass_fig is not None:
             output_files["mass"] = path
 
         path = os.path.join(output_dir, f"{figname_prefix}_entropy.png")
-        fig = plot_entropy(history, output_path=path)
-        if fig is not None:
+        entropy_fig = plot_entropy(history, output_path=path)
+        if entropy_fig is not None:
             output_files["entropy"] = path
 
         path = os.path.join(output_dir, f"{figname_prefix}_convergence.png")

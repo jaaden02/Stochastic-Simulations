@@ -52,6 +52,7 @@ def sample_from_distribution(
     samples = np.zeros((n_samples, dim))
 
     for i, ax in enumerate(grid.axis_names):
+        grid_ax: Optional[np.ndarray] = None
         if ax == "x":
             grid_ax = grid.x_grid
         elif ax == "y":
@@ -63,6 +64,9 @@ def sample_from_distribution(
                 f"Unknown axis '{ax}'. Valid axes for grid sampling: 'x', 'y', 'z'. "
                 f"Check your grid axes and ensure sampling axis matches grid dimensions."
             )
+
+        if grid_ax is None:
+            raise ValueError(f"Grid axis '{ax}' is not initialized")
 
         # Map grid index to position
         samples[:, i] = grid_ax[multi_indices[i]]

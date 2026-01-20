@@ -196,9 +196,13 @@ class FokkerPlanckSolver:
 
         # Squeeze back to original dimensionality
         if original_shape == f_new.shape:
-            return f_new
+            result_final: np.ndarray = f_new
+            return result_final
         if len(original_shape) == 1:
-            return f_new[:, 0, 0]
+            result_1d: np.ndarray = f_new[:, 0, 0]
+            return result_1d
         if len(original_shape) == 2:
-            return f_new[:, :, 0]
-        return f_new
+            result_2d: np.ndarray = f_new[:, :, 0]
+            return result_2d
+        result_3d: np.ndarray = f_new
+        return result_3d

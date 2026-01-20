@@ -115,12 +115,14 @@ class SimulationResult:
     @property
     def t_start(self) -> float:
         """Start time."""
-        return self.t_array[0]
+        result: float = float(self.t_array[0])
+        return result
 
     @property
     def t_final(self) -> float:
         """Final time."""
-        return self.t_array[-1]
+        result: float = float(self.t_array[-1])
+        return result
 
     @property
     def duration(self) -> float:

@@ -302,7 +302,8 @@ class DeterministicPDESolver:
         dt = np.mean(np.diff(t_eval))
 
         # Get scheme name for reporting
-        scheme_name = self.choose_scheme(dt)
+        dt_float: float = float(dt)
+        scheme_name = self.choose_scheme(dt_float)
 
         if verbose:
             print(f"Solving deterministic PDE with {scheme_name} scheme")
@@ -316,7 +317,8 @@ class DeterministicPDESolver:
                 print(f"CFL number: {cfl:.4f}")
 
         for i in range(1, len(t_eval)):
-            self.step(dt, t=t_eval[i - 1])
+            dt_as_float: float = float(dt)
+            self.step(dt_as_float, t=t_eval[i - 1])
             u_history.append(self.u.copy())
 
         return t_eval, np.array(u_history)

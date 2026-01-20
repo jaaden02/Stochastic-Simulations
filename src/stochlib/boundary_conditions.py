@@ -74,7 +74,8 @@ class BoundaryConditions:
         """Return the BC string for the given axis ('x'|'y'|'z')."""
         if axis not in self._axis_bc:
             raise ValueError(f"Axis '{axis}' not present or not configured")
-        return self._axis_bc[axis]
+        result: str = str(self._axis_bc[axis])
+        return result
 
     def is_periodic(self, axis: str) -> bool:
         """Check if the given axis uses periodic boundary conditions."""

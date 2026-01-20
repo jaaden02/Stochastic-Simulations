@@ -4,7 +4,7 @@ This module provides analysis functions for evaluating deterministic PDE solutio
 including mass conservation, error metrics, stability checks, and solution quality.
 """
 
-from typing import Optional
+from typing import Dict, Optional, List, Any
 import numpy as np
 from ..logging_utils import get_logger
 
@@ -172,7 +172,8 @@ def compute_l2_norm(u: np.ndarray, dx: float) -> float:
     -------
     float : L2 norm
     """
-    return np.sqrt(np.sum(u**2) * dx)
+    result: float = float(np.sqrt(np.sum(u**2) * dx))
+    return result
 
 
 def compute_error_metrics(
@@ -260,7 +261,8 @@ def compute_total_variation(u: np.ndarray) -> float:
     -------
     float : Total variation
     """
-    return np.sum(np.abs(np.diff(u)))
+    result: float = float(np.sum(np.abs(np.diff(u))))
+    return result
 
 
 class DeterministicDiagnostics:
@@ -276,7 +278,7 @@ class DeterministicDiagnostics:
 
     def __init__(self):
         """Initialize diagnostic tracker."""
-        self.history = {
+        self.history: Dict[str, List[Any]] = {
             "time": [],
             "mass": [],
             "mean": [],

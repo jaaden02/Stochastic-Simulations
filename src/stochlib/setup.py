@@ -149,24 +149,22 @@ class Grid:
         self.X = mesh[0]
         self.mesh["x"] = mesh[0]
         # Conditionally set Y and Z
+        self.Y: Optional[np.ndarray] = None
+        self.Z: Optional[np.ndarray] = None
         if len(mesh) > 1:
             self.Y = mesh[1]
             self.mesh["y"] = mesh[1]
-        else:
-            self.Y = None
         if len(mesh) > 2:
             self.Z = mesh[2]
             self.mesh["z"] = mesh[2]
-        else:
-            self.Z = None
 
     @property
     def shape(self) -> Tuple[int, ...]:
         """Return the shape of the spatial grid in present dimensions."""
         dims = [self.num_points_x]
-        if self.y_grid is not None:
+        if self.y_grid is not None and self.num_points_y is not None:
             dims.append(self.num_points_y)
-        if self.z_grid is not None:
+        if self.z_grid is not None and self.num_points_z is not None:
             dims.append(self.num_points_z)
         return tuple(dims)
 
@@ -245,10 +243,20 @@ class InitialCondition:
         self.params.setdefault("x0", (self.grid.x_start + self.grid.x_end) / 2)
         self.params.setdefault("sigma_x", 2 * self.grid.dx)
         # Conditionally set y/z defaults
-        if self.grid.y_grid is not None:
+        if (
+            self.grid.y_grid is not None
+            and self.grid.y_start is not None
+            and self.grid.y_end is not None
+            and self.grid.dy is not None
+        ):
             self.params.setdefault("y0", (self.grid.y_start + self.grid.y_end) / 2)
             self.params.setdefault("sigma_y", 2 * self.grid.dy)
-        if self.grid.z_grid is not None:
+        if (
+            self.grid.z_grid is not None
+            and self.grid.z_start is not None
+            and self.grid.z_end is not None
+            and self.grid.dz is not None
+        ):
             self.params.setdefault("z0", (self.grid.z_start + self.grid.z_end) / 2)
             self.params.setdefault("sigma_z", 2 * self.grid.dz)
 
@@ -266,7 +274,8 @@ class InitialCondition:
             if "func" not in self.params:
                 raise ValueError("Custom initial condition requires 'func' parameter")
             meshes = [self.grid.mesh[name] for name in self.grid.axis_names]
-            return self.params["func"](*meshes)
+            result: np.ndarray = self.params["func"](*meshes)
+            return result
         else:
             raise ValueError(f"Unknown initial condition type: {self.func_type}")
 
@@ -285,7 +294,8 @@ class InitialCondition:
             total_arg += (self.grid.Y - self.params["y0"]) ** 2 / (2 * self.params["sigma_y"] ** 2)
         if self.grid.z_grid is not None:
             total_arg += (self.grid.Z - self.params["z0"]) ** 2 / (2 * self.params["sigma_z"] ** 2)
-        return np.exp(-total_arg)
+        result: np.ndarray = np.exp(-total_arg)
+        return result
 
     def _delta_nd(self) -> np.ndarray:
         """Compute delta-like initial condition concentrated at a point in N-D."""
@@ -416,9 +426,9 @@ class DiffusionConfig:
 
             if not evaluate:
                 if func is not None:
-                    D_fields[a] = func  # caller may evaluate lazily
+                    D_fields[a] = func
                 elif const is not None:
-                    D_fields[a] = float(const)
+                    D_fields[a] = float(const)  # type: ignore[assignment]
                 else:
                     raise ValueError(
                         f"Axis '{a}' requires either a constant or function for diffusion"
@@ -432,12 +442,15 @@ class DiffusionConfig:
                 else:
                     D_fields[a] = func(*meshes, t)
             elif const is not None:
-                D_fields[a] = np.full(self.grid.shape, float(const), dtype=float)
+                D_fields[a] = np.full(self.grid.shape, float(const), dtype=float)  # type: ignore[assignment]
             else:
                 raise ValueError(f"Axis '{a}' requires either a constant or function for diffusion")
 
             # Basic shape validation
-            if D_fields[a].shape != self.grid.shape:
+            field_val = D_fields[a]
+            if not isinstance(field_val, np.ndarray):
+                continue
+            if field_val.shape != self.grid.shape:
                 raise ValueError(
                     f"Diffusion field for axis '{a}' has shape {D_fields[a].shape}, expected {self.grid.shape}"
                 )
@@ -448,9 +461,9 @@ class DiffusionConfig:
             for a in self.grid.axis_names:
                 if a not in D_fields:
                     if evaluate:
-                        D_fields[a] = np.zeros(self.grid.shape, dtype=float)
+                        D_fields[a] = np.zeros(self.grid.shape, dtype=float)  # type: ignore[assignment]
                     else:
-                        D_fields[a] = 0.0
+                        D_fields[a] = 0.0  # type: ignore[assignment]
 
         return D_fields
 
@@ -538,7 +551,8 @@ class VelocitiesConfig:
         if not mu_fields:
             return 0.0
         # Computes max(|mu|) for each axis and returns the global maximum
-        return max(np.max(np.abs(field)) for field in mu_fields.values())
+        max_val: float = float(max(np.max(np.abs(field)) for field in mu_fields.values()))
+        return max_val
 
 
 class SimulationSetup:
@@ -578,6 +592,7 @@ class SimulationSetup:
                 raise ValueError(
                     "grid, velocities, diffusions, and boundary_conditions are required for Fokker-Planck mode"
                 )
+            assert self.grid is not None, "Grid cannot be None after validation"
             return SimulationEngine(
                 self.grid, self.velocities, self.diffusions, self.boundary_conditions
             )

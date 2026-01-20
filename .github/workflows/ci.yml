@@ -25,9 +25,8 @@ jobs:
       - name: Install package
         run: |
           python -m pip install --upgrade pip
-          pip install -e .
-          pip install pytest pytest-cov
+          pip install uv
 
-      - name: Run tests
+      - name: Run tests with quality checks
         run: |
-          pytest -v
+          uv run pytest -v

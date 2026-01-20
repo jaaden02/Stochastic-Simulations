@@ -27,7 +27,8 @@ def _delta_cc_scalar(Pe: float) -> float:
         return 1.0 / Pe
     if Pe < -100.0:
         return 1.0 / Pe + 1.0
-    return 1.0 / Pe - 1.0 / (np.exp(Pe) - 1.0)
+    final_result: float = 1.0 / Pe - 1.0 / (np.exp(Pe) - 1.0)
+    return final_result
 
 
 @njit(inline="always")
@@ -44,14 +45,19 @@ def calculate_flux(
     if scheme == SCHEME_CHANG_COOPER:
         Pe = mu_f * d_coord / (D_f + 1e-16)
         delta = _delta_cc_scalar(Pe)
-        return mu_f * ((1.0 - delta) * f_curr + delta * f_next) - D_f * (f_next - f_curr) * inv_d
+        result: float = (
+            mu_f * ((1.0 - delta) * f_curr + delta * f_next) - D_f * (f_next - f_curr) * inv_d
+        )
+        return result
 
     elif scheme == SCHEME_CENTRAL_CN:
-        return mu_f * 0.5 * (f_curr + f_next) - D_f * (f_next - f_curr) * inv_d
+        result_cn: float = mu_f * 0.5 * (f_curr + f_next) - D_f * (f_next - f_curr) * inv_d
+        return result_cn
 
     else:  # SCHEME_UPWIND_CN
         val_adv = f_curr if mu_f >= 0 else f_next
-        return mu_f * val_adv - D_f * (f_next - f_curr) * inv_d
+        result_up: float = mu_f * val_adv - D_f * (f_next - f_curr) * inv_d
+        return result_up
 
 
 @njit(parallel=True, fastmath=True)

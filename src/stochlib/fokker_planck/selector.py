@@ -159,11 +159,14 @@ class SimulationEngine:
 
         # B. THE VALIDATION PHASE
         # Use a separate analyzer to check if the user's dt is safe
+        dt_value: float
         if dt_user is None:
-            dt_user: float = t_array[1] - t_array[0] if len(t_array) > 1 else 0.01
-        logger.debug("Computed dt_user=%.3e from t_array", dt_user)
+            dt_value = t_array[1] - t_array[0] if len(t_array) > 1 else 0.01
+        else:
+            dt_value = dt_user
+        logger.debug("Computed dt_value=%.3e from t_array", dt_value)
         report = StabilityAnalyzer.analyze(
-            self.grid, self.velocities, self.diffusions, dt_user, t=t_array[0]
+            self.grid, self.velocities, self.diffusions, dt_value, t=t_array[0]
         )
         # Pre-run cost estimate
         num_steps = max(1, len(t_array) - 1)
@@ -376,7 +379,7 @@ class SimulationEngine:
                 logger.debug("Saved snapshot at step %d (t=%.3e)", idx, t_curr)
 
             # Update progress bar with current time and mass
-            if HAS_TQDM:
+            if HAS_TQDM and hasattr(iterator, "set_postfix"):
                 iterator.set_postfix(
                     {"t": f"{t_curr:.4f}", "mass": f"{metrics['mass']:.3e}"},
                     refresh=True,
@@ -425,8 +428,8 @@ class SimulationEngine:
             if report_file is None:
                 report_file = "simulation_report.txt"
             try:
-                with open(report_file, "w") as f:
-                    f.write(full_report_text)
+                with open(report_file, "w", encoding="utf-8") as report_f:
+                    report_f.write(full_report_text)
                 logger.debug("Reports saved to: %s", report_file)
             except Exception as e:
                 logger.warning("Failed to save reports to %s: %s", report_file, e)

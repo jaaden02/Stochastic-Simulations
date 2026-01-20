@@ -150,13 +150,16 @@ def grid_bounds_from_grid(grid: Grid) -> Tuple[Array, Array]:
     upper = []
 
     if "x" in grid.axis_names:
-        lower.append(grid.x_start)
-        upper.append(grid.x_end)
+        if grid.x_start is not None and grid.x_end is not None:
+            lower.append(grid.x_start)
+            upper.append(grid.x_end)
     if "y" in grid.axis_names:
-        lower.append(grid.y_start)
-        upper.append(grid.y_end)
+        if grid.y_start is not None and grid.y_end is not None:
+            lower.append(grid.y_start)
+            upper.append(grid.y_end)
     if "z" in grid.axis_names:
-        lower.append(grid.z_start)
-        upper.append(grid.z_end)
+        if grid.z_start is not None and grid.z_end is not None:
+            lower.append(grid.z_start)
+            upper.append(grid.z_end)
 
     return np.array(lower), np.array(upper)

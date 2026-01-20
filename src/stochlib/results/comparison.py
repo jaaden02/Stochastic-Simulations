@@ -73,7 +73,8 @@ def paths_to_histogram(
     # Normalize to probability distribution
     hist = hist / (np.sum(hist) * grid.volume_element)
 
-    return hist
+    result: np.ndarray = hist
+    return result
 
 
 def compare_distributions(
