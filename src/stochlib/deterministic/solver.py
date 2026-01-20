@@ -6,10 +6,15 @@ of the form: ∂u/∂t + ∂(v·u)/∂x = 0
 Includes automatic scheme selection based on CFL condition and problem parameters.
 """
 
-from typing import Optional, Callable, Literal
+from __future__ import annotations
+
+from typing import Optional, Callable, Literal, TYPE_CHECKING
 import numpy as np
 import warnings
 from ..logging_utils import get_logger
+
+if TYPE_CHECKING:
+    from ..setup import Grid, InitialCondition
 
 logger = get_logger("deterministic.solver")
 SchemeType = Literal["auto", "upwind", "lax_wendroff", "beam_warming"]

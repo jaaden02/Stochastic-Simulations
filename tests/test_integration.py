@@ -1,6 +1,5 @@
 """Integration tests combining multiple components."""
 
-import pytest
 import numpy as np
 import sys
 from pathlib import Path
@@ -39,9 +38,9 @@ class TestBasicWorkflow:
         # Setup
         ic = InitialCondition(simple_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
         f0 = ic.f0
-        vel = VelocitiesConfig(simple_1d_grid, mu_x=0.2)
-        diff = DiffusionConfig(simple_1d_grid, constants={"x": 0.1})
-        bc = BoundaryConditions(simple_1d_grid, bc_x=BoundaryConditions.OPEN)
+        VelocitiesConfig(simple_1d_grid, mu_x=0.2)
+        DiffusionConfig(simple_1d_grid, constants={"x": 0.1})
+        BoundaryConditions(simple_1d_grid, bc_x=BoundaryConditions.OPEN)
 
         # Analysis
         x = np.linspace(simple_1d_grid.x_start, simple_1d_grid.x_end, simple_1d_grid.num_points_x)
@@ -65,7 +64,7 @@ class TestPhysicalScenarios:
         diff = DiffusionConfig(simple_1d_grid, constants={"x": 0.5})
         bc = BoundaryConditions(simple_1d_grid, bc_x=BoundaryConditions.PERIODIC)
 
-        engine = SimulationEngine(simple_1d_grid, vel, diff, bc)
+        SimulationEngine(simple_1d_grid, vel, diff, bc)
 
         # Initial peak
         peak_0 = np.max(f0)
@@ -81,7 +80,7 @@ class TestPhysicalScenarios:
         diff = DiffusionConfig(simple_1d_grid, constants={"x": 0.01})
         bc = BoundaryConditions(simple_1d_grid, bc_x=BoundaryConditions.OPEN)
 
-        engine = SimulationEngine(simple_1d_grid, vel, diff, bc)
+        SimulationEngine(simple_1d_grid, vel, diff, bc)
 
         # Peak at 3
         peak_idx = np.argmax(f0)
@@ -93,8 +92,7 @@ class TestPhysicalScenarios:
         vel = VelocitiesConfig(simple_1d_grid, mu_x=0.5)
         diff = DiffusionConfig(simple_1d_grid, constants={"x": 0.1})
 
-        ic = InitialCondition(simple_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
-        f0 = ic.f0
+        InitialCondition(simple_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
 
         bc = BoundaryConditions(simple_1d_grid, bc_x=BoundaryConditions.PERIODIC)
         engine = SimulationEngine(simple_1d_grid, vel, diff, bc)
@@ -107,7 +105,7 @@ class TestBoundaryConditionEffects:
 
     def test_periodic_bc_workflow(self, simple_1d_grid):
         """Test workflow with periodic BC."""
-        ic = InitialCondition(simple_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
+        InitialCondition(simple_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
         vel = VelocitiesConfig(simple_1d_grid, mu_x=0.5)
         diff = DiffusionConfig(simple_1d_grid, constants={"x": 0.1})
         bc = BoundaryConditions(simple_1d_grid, bc_x=BoundaryConditions.PERIODIC)
@@ -117,7 +115,7 @@ class TestBoundaryConditionEffects:
 
     def test_dirichlet_bc_workflow(self, simple_1d_grid):
         """Test workflow with Dirichlet BC."""
-        ic = InitialCondition(simple_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
+        InitialCondition(simple_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
         vel = VelocitiesConfig(simple_1d_grid, mu_x=0.5)
         diff = DiffusionConfig(simple_1d_grid, constants={"x": 0.1})
         bc = BoundaryConditions(simple_1d_grid, bc_x="noflux")
@@ -127,7 +125,7 @@ class TestBoundaryConditionEffects:
 
     def test_open_bc_workflow(self, simple_1d_grid):
         """Test workflow with open BC."""
-        ic = InitialCondition(simple_1d_grid, func_type="gaussian", x0=2.0, sigma_x=0.5)
+        InitialCondition(simple_1d_grid, func_type="gaussian", x0=2.0, sigma_x=0.5)
         vel = VelocitiesConfig(simple_1d_grid, mu_x=1.0)
         diff = DiffusionConfig(simple_1d_grid, constants={"x": 0.05})
         bc = BoundaryConditions(simple_1d_grid, bc_x=BoundaryConditions.OPEN)
@@ -142,7 +140,7 @@ class TestGridResolutionEffect:
     def test_coarse_grid_workflow(self):
         """Test workflow with coarse grid."""
         grid = Grid(x_start=0.0, x_end=10.0, num_points_x=16)
-        ic = InitialCondition(grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
+        InitialCondition(grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
         vel = VelocitiesConfig(grid, mu_x=0.5)
         diff = DiffusionConfig(grid, constants={"x": 0.1})
         bc = BoundaryConditions(grid, bc_x=BoundaryConditions.PERIODIC)
@@ -152,7 +150,7 @@ class TestGridResolutionEffect:
 
     def test_fine_grid_workflow(self, fine_1d_grid):
         """Test workflow with fine grid."""
-        ic = InitialCondition(fine_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
+        InitialCondition(fine_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
         vel = VelocitiesConfig(fine_1d_grid, mu_x=0.5)
         diff = DiffusionConfig(fine_1d_grid, constants={"x": 0.1})
         bc = BoundaryConditions(fine_1d_grid, bc_x=BoundaryConditions.PERIODIC)
@@ -162,7 +160,7 @@ class TestGridResolutionEffect:
 
     def test_medium_grid_workflow(self, medium_1d_grid):
         """Test workflow with medium grid."""
-        ic = InitialCondition(medium_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
+        InitialCondition(medium_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
         vel = VelocitiesConfig(medium_1d_grid, mu_x=0.5)
         diff = DiffusionConfig(medium_1d_grid, constants={"x": 0.1})
         bc = BoundaryConditions(medium_1d_grid, bc_x=BoundaryConditions.PERIODIC)
@@ -266,7 +264,7 @@ class TestMultipleDimensions:
 
     def test_1d_workflow(self, simple_1d_grid):
         """Test 1D workflow."""
-        ic = InitialCondition(simple_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
+        InitialCondition(simple_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
         vel = VelocitiesConfig(simple_1d_grid, mu_x=0.5)
         diff = DiffusionConfig(simple_1d_grid, constants={"x": 0.1})
         bc = BoundaryConditions(simple_1d_grid, bc_x=BoundaryConditions.PERIODIC)
@@ -276,7 +274,7 @@ class TestMultipleDimensions:
 
     def test_2d_workflow(self, simple_2d_grid):
         """Test 2D workflow."""
-        ic = InitialCondition(
+        InitialCondition(
             simple_2d_grid, func_type="gaussian", x0=5.0, y0=5.0, sigma_x=0.5, sigma_y=0.5
         )
         vel = VelocitiesConfig(simple_2d_grid, mu_x=0.3, mu_y=0.2)

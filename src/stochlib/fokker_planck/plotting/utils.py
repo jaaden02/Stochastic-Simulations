@@ -1,12 +1,10 @@
 """High-level plotting interface and convenience wrappers."""
 
 import numpy as np
-import matplotlib.pyplot as plt
-from typing import Optional, Dict, List
+from typing import Optional, Dict
 from ...setup import Grid
 from ...logging_utils import get_logger
 from .distributions import (
-    plot_1d_distribution,
     plot_1d_comparison,
     plot_1d_overlay,
     plot_2d_distribution,

@@ -1,14 +1,12 @@
 """Tests for numerical stability analysis."""
 
-import pytest
 import numpy as np
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from stochlib.setup import Grid, InitialCondition, VelocitiesConfig, DiffusionConfig
-from stochlib.boundary_conditions import BoundaryConditions
+from stochlib.setup import Grid
 
 
 class TestCFLCondition:
@@ -131,7 +129,6 @@ class TestDispersionRelation:
 
         # Phase velocity: c = u
         # Damping: -D * k^2
-        phase_velocity = u
         damping = D * k**2
 
         # Damping should be small compared to advection
@@ -170,7 +167,6 @@ class TestStabilityWithGridRefinement:
         grid = Grid(x_start=0.0, x_end=10.0, num_points_x=16)
         dx = grid.dx
         u = 0.5
-        D = 0.1
 
         # Should satisfy CFL-like condition
         dt_max = 0.4 * dx / u
@@ -181,7 +177,6 @@ class TestStabilityWithGridRefinement:
         grid = Grid(x_start=0.0, x_end=10.0, num_points_x=256)
         dx = grid.dx
         u = 0.5
-        D = 0.1
 
         # Finer grid requires smaller timestep for same CFL
         dt_max = 0.4 * dx / u

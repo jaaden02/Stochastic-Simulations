@@ -1,7 +1,6 @@
 """Shared fixtures for all tests."""
 
 import pytest
-import numpy as np
 import sys
 from pathlib import Path
 

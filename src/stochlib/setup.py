@@ -55,14 +55,14 @@ class Grid:
         y_params_count = sum(p is not None for p in [y_start, y_end, num_points_y])
         if y_params_count > 0 and y_params_count < 3:
             raise ValueError(
-                f"If any y parameter is provided, all three (y_start, y_end, num_points_y) must be provided"
+                "If any y parameter is provided, all three (y_start, y_end, num_points_y) must be provided"
             )
 
         # Validate 3D parameters are complete if any are provided
         z_params_count = sum(p is not None for p in [z_start, z_end, num_points_z])
         if z_params_count > 0 and z_params_count < 3:
             raise ValueError(
-                f"If any z parameter is provided, all three (z_start, z_end, num_points_z) must be provided"
+                "If any z parameter is provided, all three (z_start, z_end, num_points_z) must be provided"
             )
 
         # Safeguard against excessively large grids (memory protection)
@@ -453,9 +453,6 @@ class DiffusionConfig:
                         D_fields[a] = 0.0
 
         return D_fields
-
-
-import numpy as np
 
 
 class VelocitiesConfig:

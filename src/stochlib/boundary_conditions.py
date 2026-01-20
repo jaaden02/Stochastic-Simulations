@@ -4,7 +4,6 @@ Supports open, no-flux, and periodic boundary conditions for 1D, 2D, and 3D grid
 """
 
 from typing import Optional
-import numpy as np
 
 from .setup import Grid
 

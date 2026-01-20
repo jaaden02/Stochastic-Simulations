@@ -14,6 +14,7 @@ __all__ = [
     "FokkerPlanckSolver",
     "StabilityAnalyzer",
     "DiagnosticReport",
+    "SolutionDiagnostics",
     "NumericalRegimeAdvisor",
     "SimulationEngine",
     "universal_fp_step_kernel",

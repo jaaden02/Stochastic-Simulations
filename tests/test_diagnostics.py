@@ -1,14 +1,12 @@
 """Tests for diagnostics and analysis functions."""
 
-import pytest
 import numpy as np
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from stochlib.setup import Grid, InitialCondition, VelocitiesConfig, DiffusionConfig
-from stochlib.boundary_conditions import BoundaryConditions
+from stochlib.setup import InitialCondition
 
 
 class TestMoments:

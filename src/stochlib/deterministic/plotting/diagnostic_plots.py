@@ -1,8 +1,11 @@
 """Diagnostic visualization for deterministic PDE solutions."""
 
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 import numpy as np
 import matplotlib.pyplot as plt
+
+if TYPE_CHECKING:
+    from ..diagnostic import DeterministicDiagnostics
 
 
 def plot_diagnostics(
@@ -57,7 +60,7 @@ def plot_diagnostics(
     ax1.grid(True, alpha=0.3)
 
     lines = l1 + l2
-    labels = [l.get_label() for l in lines]
+    labels = [line.get_label() for line in lines]
     ax1.legend(lines, labels, loc="best")
 
     # Min/max values

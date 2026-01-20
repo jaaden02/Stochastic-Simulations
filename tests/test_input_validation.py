@@ -125,7 +125,7 @@ class TestInitialConditionValidation:
         grid = Grid(x_start=0.0, x_end=10.0, num_points_x=64)
         # Providing y0 for 1D grid
         try:
-            ic = InitialCondition(grid, func_type="gaussian", x0=5.0, sigma_x=0.5, y0=5.0)
+            InitialCondition(grid, func_type="gaussian", x0=5.0, sigma_x=0.5, y0=5.0)
             # May ignore extra params or raise error
         except (ValueError, TypeError):
             pass
@@ -155,7 +155,7 @@ class TestBoundaryConditionValidation:
         """Test specifying bc_y on 1D grid."""
         grid = Grid(x_start=0.0, x_end=10.0, num_points_x=64)
         try:
-            bc = BoundaryConditions(grid, bc_x="periodic", bc_y="open")
+            BoundaryConditions(grid, bc_x="periodic", bc_y="open")
             # Should either ignore or raise error
         except (ValueError, AttributeError):
             pass
@@ -171,7 +171,7 @@ class TestBoundaryConditionValidation:
         grid = Grid(x_start=0.0, x_end=10.0, num_points_x=64)
         # Try uppercase
         try:
-            bc = BoundaryConditions(grid, bc_x="OPEN")
+            BoundaryConditions(grid, bc_x="OPEN")
             # If it works, case-insensitive
         except (ValueError, KeyError):
             # Case-sensitive, which is fine
@@ -230,7 +230,7 @@ class TestDiffusionConfigValidation:
         grid = Grid(x_start=0.0, x_end=10.0, num_points_x=64)
         # Negative diffusion is unphysical
         try:
-            diff = DiffusionConfig(grid, constants={"x": -0.5})
+            DiffusionConfig(grid, constants={"x": -0.5})
             # May accept and handle, or reject
         except (ValueError, AssertionError):
             pass

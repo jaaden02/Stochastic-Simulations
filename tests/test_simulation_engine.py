@@ -1,6 +1,5 @@
 """Tests for the simulation engine."""
 
-import pytest
 import numpy as np
 import sys
 from pathlib import Path
@@ -70,7 +69,7 @@ class TestSingleTimeStep:
         diff = basic_setup_1d["diffusions"]
         bc = basic_setup_1d["bc"]
 
-        engine = SimulationEngine(grid, vel, diff, bc)
+        SimulationEngine(grid, vel, diff, bc)
 
         # Check initial shape
         assert f0.shape == (grid.num_points_x,)
@@ -84,7 +83,7 @@ class TestSingleTimeStep:
         diff = basic_setup_1d["diffusions"]
         bc = basic_setup_1d["bc"]
 
-        engine = SimulationEngine(grid, vel, diff, bc)
+        SimulationEngine(grid, vel, diff, bc)
 
         # Initial mass
         mass0 = np.trapz(f0, dx=grid.dx)
@@ -97,7 +96,7 @@ class TestMultipleTimeSteps:
     def test_long_time_evolution(self, basic_setup_1d):
         """Test evolution over many timesteps."""
         grid = basic_setup_1d["grid"]
-        f = basic_setup_1d["f0"].copy()
+        basic_setup_1d["f0"].copy()
 
         vel = basic_setup_1d["velocities"]
         diff = basic_setup_1d["diffusions"]
@@ -106,7 +105,6 @@ class TestMultipleTimeSteps:
         engine = SimulationEngine(grid, vel, diff, bc)
 
         # Evolve if method exists
-        dt = 0.001
         if hasattr(engine, "step"):
             for _ in range(10):
                 if hasattr(engine, "step"):
@@ -129,7 +127,7 @@ class TestPerturbations:
 
     def test_response_to_initial_condition(self, basic_setup_1d):
         """Test that engine responds to initial condition."""
-        grid = basic_setup_1d["grid"]
+        basic_setup_1d["grid"]
         f0 = basic_setup_1d["f0"]
 
         # Perturb initial condition
@@ -141,8 +139,7 @@ class TestPerturbations:
 
     def test_sensitivity_to_drift(self, simple_1d_grid):
         """Test sensitivity to drift parameter."""
-        ic = InitialCondition(simple_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
-        f0 = ic.f0
+        InitialCondition(simple_1d_grid, func_type="gaussian", x0=5.0, sigma_x=0.5)
 
         diff = DiffusionConfig(simple_1d_grid, constants={"x": 0.1})
         bc = BoundaryConditions(simple_1d_grid, bc_x=BoundaryConditions.OPEN)
@@ -230,7 +227,7 @@ class TestEngineEdgeCases:
 
     def test_very_small_timestep(self, basic_setup_1d):
         """Test with very small timestep."""
-        engine = SimulationEngine(
+        SimulationEngine(
             basic_setup_1d["grid"],
             basic_setup_1d["velocities"],
             basic_setup_1d["diffusions"],
@@ -242,7 +239,7 @@ class TestEngineEdgeCases:
 
     def test_large_timestep(self, basic_setup_1d):
         """Test with large (potentially unstable) timestep."""
-        engine = SimulationEngine(
+        SimulationEngine(
             basic_setup_1d["grid"],
             basic_setup_1d["velocities"],
             basic_setup_1d["diffusions"],

@@ -1,6 +1,5 @@
 """Tests for configuration objects."""
 
-import pytest
 import numpy as np
 import sys
 from pathlib import Path

@@ -209,7 +209,7 @@ def plot_2d_distribution(
     im = ax.imshow(data.T, origin="lower", cmap=cmap, aspect="auto")
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
-    cbar = fig.colorbar(im, ax=ax, label="f")
+    fig.colorbar(im, ax=ax, label="f")
 
     if title is None:
         title = "2D Distribution"

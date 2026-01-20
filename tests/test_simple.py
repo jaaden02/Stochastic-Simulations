@@ -15,7 +15,7 @@ def test_basic():
 def test_import():
     """Test that we can import the library."""
     try:
-        import stochlib
+        import stochlib  # noqa: F401
 
         assert True
     except ImportError as e:

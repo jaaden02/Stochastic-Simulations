@@ -102,7 +102,7 @@ def plot_mean_variance(
         mean[:, dim] - std,
         mean[:, dim] + std,
         alpha=0.2,
-        label=f"±1 std",
+        label="±1 std",
     )
     ax.set_xlabel("t")
     ax.legend()

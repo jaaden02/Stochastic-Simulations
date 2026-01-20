@@ -126,7 +126,7 @@ class TestPathSimulator:
         sim = PathSimulator(drift=drift, diffusion=diffusion, rng=np.random.default_rng(88))
         x0 = np.array([1.0])
         t_array = np.linspace(0, 1.0, 20)
-        result = sim.simulate(x0=x0, t_array=t_array, n_paths=10, diagnostics=diag)
+        sim.simulate(x0=x0, t_array=t_array, n_paths=10, diagnostics=diag)
 
         assert len(diag.history["mean"]) == len(t_array) - 1  # recorded at each step
         assert len(diag.history["var"]) == len(t_array) - 1

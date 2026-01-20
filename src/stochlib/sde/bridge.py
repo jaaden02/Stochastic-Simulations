@@ -28,7 +28,6 @@ def fp_to_sde_drift(
         Drift function mu(x, t) returning array of shape x.shape
     """
     axis_names = grid.axis_names
-    dim = len(axis_names)
 
     def drift(x: Array, t: float) -> Array:
         # x can be (n_paths, dim) or (dim,)
@@ -93,7 +92,6 @@ def fp_to_sde_diffusion(
     FP uses d/dx(D*df/dx) corresponding to variance 2*D.
     """
     axis_names = grid.axis_names
-    dim = len(axis_names)
 
     def diffusion(x: Array, t: float) -> Array:
         single_path = x.ndim == 1

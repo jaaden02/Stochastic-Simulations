@@ -1,6 +1,5 @@
 """Tests for numerical schemes."""
 
-import pytest
 import numpy as np
 
 
@@ -273,8 +272,6 @@ class TestSchemeComparison:
         # Upwind: lower order but monotone
 
         # Both should give reasonable results
-        dx = 0.1
-        u = 1.0
 
         # Upwind: uses 1 point
         upwind_points = 1

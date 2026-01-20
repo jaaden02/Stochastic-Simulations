@@ -4,7 +4,7 @@ Provides automatic scheme selection based on problem characteristics and a high-
 simulation engine for running Fokker-Planck PDE solutions.
 """
 
-from typing import Optional, Dict, Tuple, Any
+from typing import Optional, Dict, Any
 import numpy as np
 import logging
 import time
@@ -313,7 +313,6 @@ class SimulationEngine:
         dict
             {"final": ndarray, "snapshots": list, "times": list, "summary": dict, "report_text": str}
         """
-        import time
 
         snapshots = []
         times = []
@@ -324,7 +323,6 @@ class SimulationEngine:
         start_time = time.time()
 
         # Setup progress bar if available
-        num_steps = len(t_array) - 1
         iterator = (
             tqdm(range(1, len(t_array)), desc="Simulating", unit="step", disable=not HAS_TQDM)
             if HAS_TQDM
