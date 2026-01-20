@@ -1,8 +1,12 @@
 """Shared fixtures for all tests."""
 
+import os
 import pytest
 import sys
 from pathlib import Path
+
+# Force a headless-friendly backend so matplotlib does not try to load Tk on CI (Windows lacks Tcl).
+os.environ.setdefault("MPLBACKEND", "Agg")
 
 # Add src to path so we can import stochlib
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
