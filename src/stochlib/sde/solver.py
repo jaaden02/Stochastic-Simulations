@@ -149,9 +149,7 @@ class PathSimulator:
 
         # Boundary tracking
         alive = np.ones(n_paths, dtype=bool)  # all paths start alive
-        ever_exited = np.zeros(
-            n_paths, dtype=bool
-        )  # track if path ever exited (for "reject" mode)
+        ever_exited = np.zeros(n_paths, dtype=bool)  # track if path ever exited (for "reject" mode)
         exit_times = np.full(n_paths, np.nan)  # time when each path exited
 
         paths = None
@@ -176,9 +174,7 @@ class PathSimulator:
                 if self.boundary_mode == "reflect":
                     # Reflect paths at boundaries
                     x = self._apply_reflection(x)
-                    exited_now = np.zeros(
-                        n_paths, dtype=bool
-                    )  # no paths "exit" with reflection
+                    exited_now = np.zeros(n_paths, dtype=bool)  # no paths "exit" with reflection
                 else:
                     exited_now = self._check_boundaries(x)
                     ever_exited |= exited_now
@@ -290,9 +286,7 @@ class PathSimulator:
         if self.scheme == "milstein":
 
             def _step(x, t, dt):
-                return milstein_step(
-                    x, drift_fn, diffusion_fn, diffusion_jac, t, dt, self.rng
-                )
+                return milstein_step(x, drift_fn, diffusion_fn, diffusion_jac, t, dt, self.rng)
 
         else:
 

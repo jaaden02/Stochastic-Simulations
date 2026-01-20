@@ -59,33 +59,27 @@ class TestGrid2DEdgeCases:
     def test_grid_2d_square(self):
         """Test 2D grid with square domain."""
         grid = Grid(
-            num_points_x=21, x_start=0.0, x_end=1.0,
-            num_points_y=21, y_start=0.0, y_end=1.0
+            num_points_x=21, x_start=0.0, x_end=1.0, num_points_y=21, y_start=0.0, y_end=1.0
         )
         assert grid.shape == (21, 21)
 
     def test_grid_2d_rectangular(self):
         """Test 2D grid with rectangular domain."""
         grid = Grid(
-            num_points_x=51, x_start=-1.0, x_end=1.0,
-            num_points_y=21, y_start=-0.5, y_end=0.5
+            num_points_x=51, x_start=-1.0, x_end=1.0, num_points_y=21, y_start=-0.5, y_end=0.5
         )
         assert grid.shape == (51, 21)
         assert grid.dx != grid.dy  # Different aspect ratios
 
     def test_grid_2d_minimum_size(self):
         """Test 2D grid with minimum valid size."""
-        grid = Grid(
-            num_points_x=2, x_start=0.0, x_end=1.0,
-            num_points_y=2, y_start=0.0, y_end=1.0
-        )
+        grid = Grid(num_points_x=2, x_start=0.0, x_end=1.0, num_points_y=2, y_start=0.0, y_end=1.0)
         assert grid.shape == (2, 2)
 
     def test_grid_2d_very_different_aspect_ratio(self):
         """Test 2D grid with extreme aspect ratios."""
         grid = Grid(
-            num_points_x=1000, x_start=0.0, x_end=100.0,
-            num_points_y=2, y_start=0.0, y_end=1.0
+            num_points_x=1000, x_start=0.0, x_end=100.0, num_points_y=2, y_start=0.0, y_end=1.0
         )
         assert grid.shape == (1000, 2)
         # y has much larger spacing than x due to fewer points
@@ -98,9 +92,15 @@ class TestGrid3DEdgeCases:
     def test_grid_3d_cubic(self):
         """Test 3D grid with cubic domain."""
         grid = Grid(
-            num_points_x=16, x_start=0.0, x_end=1.0,
-            num_points_y=16, y_start=0.0, y_end=1.0,
-            num_points_z=16, z_start=0.0, z_end=1.0
+            num_points_x=16,
+            x_start=0.0,
+            x_end=1.0,
+            num_points_y=16,
+            y_start=0.0,
+            y_end=1.0,
+            num_points_z=16,
+            z_start=0.0,
+            z_end=1.0,
         )
         assert grid.shape == (16, 16, 16)
         assert np.isclose(grid.dx, grid.dy)
@@ -109,9 +109,15 @@ class TestGrid3DEdgeCases:
     def test_grid_3d_rectangular_box(self):
         """Test 3D grid with rectangular box domain."""
         grid = Grid(
-            num_points_x=32, x_start=0.0, x_end=2.0,
-            num_points_y=24, y_start=0.0, y_end=1.5,
-            num_points_z=16, z_start=0.0, z_end=1.0
+            num_points_x=32,
+            x_start=0.0,
+            x_end=2.0,
+            num_points_y=24,
+            y_start=0.0,
+            y_end=1.5,
+            num_points_z=16,
+            z_start=0.0,
+            z_end=1.0,
         )
         assert grid.shape == (32, 24, 16)
         assert grid.dx < grid.dy < grid.dz  # Different spacings
@@ -119,9 +125,15 @@ class TestGrid3DEdgeCases:
     def test_grid_3d_minimum_size(self):
         """Test 3D grid with minimum valid size."""
         grid = Grid(
-            num_points_x=2, x_start=0.0, x_end=1.0,
-            num_points_y=2, y_start=0.0, y_end=1.0,
-            num_points_z=2, z_start=0.0, z_end=1.0
+            num_points_x=2,
+            x_start=0.0,
+            x_end=1.0,
+            num_points_y=2,
+            y_start=0.0,
+            y_end=1.0,
+            num_points_z=2,
+            z_start=0.0,
+            z_end=1.0,
         )
         assert grid.shape == (2, 2, 2)
         assert grid.total_points == 8
@@ -129,9 +141,15 @@ class TestGrid3DEdgeCases:
     def test_grid_3d_asymmetric_domains(self):
         """Test 3D grid with asymmetric domain bounds."""
         grid = Grid(
-            num_points_x=51, x_start=-1.0, x_end=1.0,
-            num_points_y=31, y_start=-2.0, y_end=2.0,
-            num_points_z=21, z_start=-0.5, z_end=0.5
+            num_points_x=51,
+            x_start=-1.0,
+            x_end=1.0,
+            num_points_y=31,
+            y_start=-2.0,
+            y_end=2.0,
+            num_points_z=21,
+            z_start=-0.5,
+            z_end=0.5,
         )
         assert grid.shape == (51, 31, 21)
         assert grid.x_start == -1.0 and grid.x_end == 1.0
@@ -141,9 +159,15 @@ class TestGrid3DEdgeCases:
     def test_grid_3d_extreme_aspect_ratio(self):
         """Test 3D grid with extreme aspect ratios."""
         grid = Grid(
-            num_points_x=256, x_start=0.0, x_end=1.0,
-            num_points_y=16, y_start=0.0, y_end=1.0,
-            num_points_z=2, z_start=0.0, z_end=1.0
+            num_points_x=256,
+            x_start=0.0,
+            x_end=1.0,
+            num_points_y=16,
+            y_start=0.0,
+            y_end=1.0,
+            num_points_z=2,
+            z_start=0.0,
+            z_end=1.0,
         )
         assert grid.shape == (256, 16, 2)
         # z has much larger spacing than x
@@ -152,9 +176,15 @@ class TestGrid3DEdgeCases:
     def test_grid_3d_meshgrids_present(self):
         """Test that 3D grid has all coordinate meshgrids."""
         grid = Grid(
-            num_points_x=8, x_start=0.0, x_end=1.0,
-            num_points_y=8, y_start=0.0, y_end=1.0,
-            num_points_z=8, z_start=0.0, z_end=1.0
+            num_points_x=8,
+            x_start=0.0,
+            x_end=1.0,
+            num_points_y=8,
+            y_start=0.0,
+            y_end=1.0,
+            num_points_z=8,
+            z_start=0.0,
+            z_end=1.0,
         )
         assert grid.X is not None
         assert grid.Y is not None
@@ -166,12 +196,18 @@ class TestGrid3DEdgeCases:
     def test_grid_3d_large_volume(self):
         """Test 3D grid with moderately large volume."""
         grid = Grid(
-            num_points_x=32, x_start=0.0, x_end=1.0,
-            num_points_y=32, y_start=0.0, y_end=1.0,
-            num_points_z=32, z_start=0.0, z_end=1.0
+            num_points_x=32,
+            x_start=0.0,
+            x_end=1.0,
+            num_points_y=32,
+            y_start=0.0,
+            y_end=1.0,
+            num_points_z=32,
+            z_start=0.0,
+            z_end=1.0,
         )
         assert grid.shape == (32, 32, 32)
-        assert grid.total_points == 32 ** 3
+        assert grid.total_points == 32**3
         # Grid should still be created (within memory limits)
         assert np.isfinite(grid.volume_element)
 
@@ -183,11 +219,11 @@ class TestInitialConditionEdgeCases:
         """Test IC with very narrow Gaussian (small sigma)."""
         grid = Grid(num_points_x=1001, x_start=-10.0, x_end=10.0)
         ic = InitialCondition(grid, func_type="gaussian", x0=0.0, sigma_x=0.01)
-        
+
         # Peak should be near center
         peak_idx = np.argmax(ic.f0)
         assert abs(grid.x_grid[peak_idx] - 0.0) < 0.1
-        
+
         # Should be normalized
         integral = np.trapz(ic.f0, grid.x_grid)
         assert integral == pytest.approx(1.0, rel=1e-2)
@@ -196,7 +232,7 @@ class TestInitialConditionEdgeCases:
         """Test IC with very wide Gaussian (large sigma)."""
         grid = Grid(num_points_x=101, x_start=-10.0, x_end=10.0)
         ic = InitialCondition(grid, func_type="gaussian", x0=0.0, sigma_x=5.0)
-        
+
         # Should still be normalized
         integral = np.trapz(ic.f0, grid.x_grid)
         assert integral == pytest.approx(1.0, rel=1e-2)
@@ -206,7 +242,7 @@ class TestInitialConditionEdgeCases:
         grid = Grid(num_points_x=501, x_start=-10.0, x_end=10.0)
         center = 3.5
         ic = InitialCondition(grid, func_type="gaussian", x0=center, sigma_x=1.0)
-        
+
         # Peak should be near specified center
         peak_idx = np.argmax(ic.f0)
         assert abs(grid.x_grid[peak_idx] - center) < grid.dx
@@ -215,7 +251,7 @@ class TestInitialConditionEdgeCases:
         """Test IC centered at domain boundary."""
         grid = Grid(num_points_x=101, x_start=0.0, x_end=10.0)
         ic = InitialCondition(grid, func_type="gaussian", x0=0.0, sigma_x=1.0)
-        
+
         # Should still be normalized despite boundary
         integral = np.trapz(ic.f0, grid.x_grid)
         assert integral == pytest.approx(1.0, rel=1e-1)
@@ -224,10 +260,10 @@ class TestInitialConditionEdgeCases:
         """Test uniform IC creation."""
         grid = Grid(num_points_x=51, x_start=0.0, x_end=1.0)
         ic = InitialCondition(grid, func_type="uniform")
-        
+
         # All values should be equal
         assert np.allclose(ic.f0, ic.f0[0])
-        
+
         # Should be normalized (trapz rule might have small error)
         integral = np.trapz(ic.f0, grid.x_grid)
         assert 0.98 < integral < 1.02  # Allow wider tolerance for discrete integration
@@ -237,11 +273,11 @@ class TestInitialConditionEdgeCases:
         grid = Grid(num_points_x=1001, x_start=-10.0, x_end=10.0)
         center = 0.0
         ic = InitialCondition(grid, func_type="gaussian", x0=center, sigma_x=0.001)
-        
+
         # Should be very sharp around center
         peak_idx = np.argmax(ic.f0)
         peak_value = ic.f0[peak_idx]
-        
+
         # Values away from peak should be much smaller
         away_indices = np.where(np.abs(grid.x_grid - center) > 1.0)[0]
         assert np.all(ic.f0[away_indices] < peak_value * 0.01)
@@ -285,14 +321,14 @@ class TestICValidationErrors:
     def test_ic_invalid_type(self):
         """Test that invalid IC types are rejected."""
         grid = Grid(num_points_x=51, x_start=0.0, x_end=1.0)
-        
+
         with pytest.raises((ValueError, KeyError)):
             InitialCondition(grid, func_type="invalid_type")
 
     def test_ic_zero_sigma(self):
         """Test that zero sigma is handled."""
         grid = Grid(num_points_x=51, x_start=0.0, x_end=1.0)
-        
+
         # Zero sigma might raise or create delta function
         try:
             ic = InitialCondition(grid, func_type="gaussian", sigma_x=0.0)
@@ -306,7 +342,7 @@ class TestICValidationErrors:
     def test_ic_negative_sigma(self):
         """Test that negative sigma is rejected."""
         grid = Grid(num_points_x=51, x_start=0.0, x_end=1.0)
-        
+
         with pytest.raises(ValueError):
             InitialCondition(grid, func_type="gaussian", sigma_x=-1.0)
 
@@ -329,8 +365,7 @@ class TestGridMemorySafety:
         # 1000x1000 = 1M points should be fine
         try:
             grid = Grid(
-                num_points_x=1000, x_start=0.0, x_end=1.0,
-                num_points_y=1000, y_start=0.0, y_end=1.0
+                num_points_x=1000, x_start=0.0, x_end=1.0, num_points_y=1000, y_start=0.0, y_end=1.0
             )
             assert grid.shape == (1000, 1000)
         except (ValueError, MemoryError):
