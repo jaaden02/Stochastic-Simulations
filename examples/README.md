@@ -153,6 +153,27 @@ Demonstrates deterministic advection equation solving with automatic numerical s
 
 ---
 
+### [07_chang_cooper_phi.ipynb](07_chang_cooper_phi.ipynb)
+**Chang–Cooper Drift–Diffusion (Periodic φ) with FP vs SDE**
+
+Demonstrates the Chang–Cooper scheme on a periodic angular variable and compares the FP solution to SDE path histograms.
+
+**Topics Covered:**
+- 1D periodic domain using Chang–Cooper weighting
+- Time-dependent drift from the original 3D model reduced to φ
+- Stability check with `StabilityAnalyzer`
+- FP vs SDE histogram comparison and wrapping on the circle
+
+**Key Classes:**
+- `Grid`, `InitialCondition`, `VelocitiesConfig`, `DiffusionConfig`
+- `BoundaryConditions` (periodic)
+- `SimulationEngine` (FP) and `PathSimulator` (SDE)
+- `fp_to_sde_drift`, `fp_to_sde_diffusion` for FP→SDE bridging
+
+**Learning Outcome:** See how Chang–Cooper preserves positivity on a periodic domain and how the FP solution aligns with SDE paths.
+
+---
+
 ## Running the Notebooks
 
 ### Setup
@@ -167,7 +188,7 @@ Demonstrates deterministic advection equation solving with automatic numerical s
    ```
 
 ### Execution Tips
-- Run notebooks in order (01 → 06) for progressive learning
+- Run notebooks in order (01 → 07) for progressive learning
 - Each notebook is self-contained and can run independently
 - Notebooks configure logging to INFO level for traceability
 - Some notebooks (especially 04) may take a few minutes to complete parameter sweeps
@@ -187,6 +208,7 @@ Demonstrates deterministic advection equation solving with automatic numerical s
 **Advanced (6+ hours)**:
 - Complete intermediate path
 - 06: Deterministic advection and CFL analysis
+- 07: Chang–Cooper periodic drift–diffusion (FP vs SDE)
 - Study source code patterns
 
 ## Common Patterns

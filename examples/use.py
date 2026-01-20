@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib
 
 # Use non-interactive backend to avoid blocking/hanging in headless runs
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from stochlib import (
@@ -38,10 +38,10 @@ def main() -> None:
 
     # 2) Physics: velocities and diffusion
     velocities = VelocitiesConfig(grid, mu_x=-0.2)
-    diffusions = DiffusionConfig(grid, constants={'x': 0.5})
+    diffusions = DiffusionConfig(grid, constants={"x": 0.5})
 
     # 3) Initial condition
-    ic = InitialCondition(grid, func_type='gaussian', x0=5.0, sigma_x=0.4)
+    ic = InitialCondition(grid, func_type="gaussian", x0=5.0, sigma_x=0.4)
     f = ic.f0.copy()
     f_init = f.copy()
 
@@ -65,9 +65,9 @@ def main() -> None:
         save_reports=save_reports,
         report_file=report_file,
     )
-    final_f = result['final']
-    summary = result['summary']
-    
+    final_f = result["final"]
+    summary = result["summary"]
+
     # 6) Print summary (without verbose logging)
     print("\n" + "=" * 65)
     print(" " * 20 + "SUMMARY")
@@ -81,7 +81,7 @@ def main() -> None:
         grid=grid,
         f_initial=f_init,
         f_final=final_f,
-        history=result.get('history'),  # Pass full diagnostics history for detailed plots
+        history=result.get("history"),  # Pass full diagnostics history for detailed plots
         output_dir="plots",
         figname_prefix="fp_example",
     )

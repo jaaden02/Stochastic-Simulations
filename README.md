@@ -94,13 +94,13 @@ stochlib/
 │   │   └── plotting/            # Trajectory plots
 │   └── deterministic/           # Deterministic PDE solver
 ├── tests/                       # 279 comprehensive tests
-├── examples/                    # 6 Jupyter notebooks
+├── examples/                    # 7 Jupyter notebooks
 └── docs/                        # Additional documentation
 ```
 
 ## Examples & Tutorials
 
-We provide 6 comprehensive Jupyter notebooks demonstrating all features:
+We provide 7 comprehensive Jupyter notebooks demonstrating all features:
 
 | Notebook | Topic | Difficulty | Duration |
 |----------|-------|------------|----------|
@@ -110,6 +110,7 @@ We provide 6 comprehensive Jupyter notebooks demonstrating all features:
 | [04_parameter_sweep_analysis](examples/04_parameter_sweep_analysis.ipynb) | Convergence & stability | Advanced | 15-20 min |
 | [05_fp_vs_sde_comparison](examples/05_fp_vs_sde_comparison.ipynb) | Method comparison | Advanced | 20-30 min |
 | [06_deterministic_solver_intro](examples/06_deterministic_solver_intro.ipynb) | Pure advection solver | Intermediate | 10-15 min |
+| [07_chang_cooper_phi](examples/07_chang_cooper_phi.ipynb) | Chang–Cooper periodic drift–diffusion (FP vs SDE) | Intermediate | 10-15 min |
 
 **Recommended Learning Path:**
 1. Start with `01_fokker_planck_intro` for PDE basics
