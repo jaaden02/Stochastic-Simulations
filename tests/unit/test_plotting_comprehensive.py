@@ -1,12 +1,7 @@
 """Comprehensive tests for plotting modules across all solvers."""
 
-import pytest
 import numpy as np
 import matplotlib.pyplot as plt
-from stochlib import (
-    Grid,
-    InitialCondition,
-)
 
 
 class TestSDEPlottingImports:

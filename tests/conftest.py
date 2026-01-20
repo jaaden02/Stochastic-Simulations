@@ -93,3 +93,53 @@ def basic_setup_1d(simple_1d_grid):
 
 # engine_1d fixture removed - import SimulationEngine only in tests that need it
 # to avoid slow numba loading
+
+
+# Code Quality Checks
+# These run automatically when pytest runs
+
+
+def pytest_configure(config):
+    """Run code quality checks before tests."""
+    import subprocess
+
+    # Only run in normal test mode, not in collection-only mode
+    if config.option.collectonly:
+        return
+
+    root = Path(__file__).parent.parent
+
+    # Run Black check
+    print("\n" + "=" * 70)
+    print("Running Black formatting check...")
+    print("=" * 70)
+    result = subprocess.run(
+        ["uv", "run", "black", "--check", "--line-length", "100", "src/", "tests/"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        print(result.stdout)
+        print(result.stderr)
+        raise pytest.exit(
+            "Black formatting check failed. Run: uv run black --line-length 100 src/ tests/", 1
+        )
+    print("✓ Black check passed")
+
+    # Run Ruff check
+    print("\n" + "=" * 70)
+    print("Running Ruff linting check...")
+    print("=" * 70)
+    result = subprocess.run(
+        ["uv", "run", "ruff", "check", "src/", "tests/"], cwd=root, capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        print(result.stdout)
+        print(result.stderr)
+        raise pytest.exit("Ruff linting check failed. Run: uv run ruff check --fix src/ tests/", 1)
+    print("✓ Ruff check passed")
+
+    print("\n" + "=" * 70)
+    print("All code quality checks passed! Running tests...")
+    print("=" * 70 + "\n")
