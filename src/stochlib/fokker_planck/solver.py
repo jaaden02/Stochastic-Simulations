@@ -50,7 +50,11 @@ class FokkerPlanckSolver:
         self.bc_flags: np.ndarray = np.array(bc_flags_list, dtype=np.int32)
 
         # Build scheme flags only for axes that exist on the grid
-        scheme_map: Dict[str, int] = {"chang_cooper": 0, "central_cn": 1, "upwind_cn": 2}
+        scheme_map: Dict[str, int] = {
+            "chang_cooper": 0,
+            "central_cn": 1,
+            "upwind_cn": 2,
+        }
         scheme_flags_list: List[int] = []
         for ax in self.axis_names:
             scheme_flags_list.append(scheme_map[schemes.get(ax, "chang_cooper")])
@@ -100,25 +104,43 @@ class FokkerPlanckSolver:
         """
         # Validate field shape
         if f.shape != self.grid.shape:
-            raise ValueError(f"Field shape {f.shape} does not match grid shape {self.grid.shape}")
+            raise ValueError(
+                f"Field shape {f.shape} does not match grid shape {self.grid.shape}. "
+                f"Ensure field dimensions match the number of grid points in each axis. "
+                f"Use np.meshgrid() to create fields matching your grid."
+            )
 
         # Validate that all active axes have velocity and diffusion fields
         for ax in self.axis_names:
             if ax not in MU_fields:
-                raise ValueError(f"Missing velocity field for axis '{ax}'")
+                raise ValueError(
+                    f"Missing velocity field for axis '{ax}'. "
+                    f"Required axes: {list(self.axis_names)}. "
+                    f"Create field using: MU_fields['{ax}'] = np.ones(self.grid.shape)"
+                )
             if ax not in D_fields:
-                raise ValueError(f"Missing diffusion field for axis '{ax}'")
+                raise ValueError(
+                    f"Missing diffusion field for axis '{ax}'. "
+                    f"Required axes: {list(self.axis_names)}. "
+                    f"Create field using: D_fields['{ax}'] = np.ones(self.grid.shape)"
+                )
 
             # Check field shapes
             if MU_fields[ax].shape != self.grid.shape:
                 raise ValueError(
                     f"Velocity field for axis '{ax}' has shape {MU_fields[ax].shape}, "
-                    f"expected {self.grid.shape}"
+                    f"expected {self.grid.shape}. "
+                    f"Ensure all fields use the same grid. "
+                    f"Debug: print(f'Grid shape: {self.grid.shape}, "
+                    f"Velocity shape: {MU_fields[ax].shape}')"
                 )
             if D_fields[ax].shape != self.grid.shape:
                 raise ValueError(
                     f"Diffusion field for axis '{ax}' has shape {D_fields[ax].shape}, "
-                    f"expected {self.grid.shape}"
+                    f"expected {self.grid.shape}. "
+                    f"Ensure all fields use the same grid and are strictly positive. "
+                    f"Debug: print(f'Grid shape: {self.grid.shape}, "
+                    f"Diffusion shape: {D_fields[ax].shape}')"
                 )
 
         # Normalize shape to 3D for kernel (pad singleton dims for 1D/2D)

@@ -28,6 +28,7 @@ MANIFEST
 
 # Testing
 .pytest_cache/
+.ruff_cache/
 .tox/
 .coverage
 .coverage.*
@@ -44,6 +45,11 @@ htmlcov/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Profiling and performance
+profiling/*.svg
+profiling/*.json
+profiling/*.prof
 
 # Project-specific
 plots/

@@ -31,5 +31,9 @@ class StepSchemeAdvisor:
             return "euler_maruyama"
         scheme = scheme.lower()
         if scheme not in {"euler_maruyama", "milstein"}:
-            raise ValueError(f"Unknown scheme '{scheme}'")
+            raise ValueError(
+                f"Unknown scheme '{scheme}'. "
+                f"Valid schemes are: 'euler_maruyama', 'milstein'. "
+                f"Use 'auto' to automatically select based on diffusion."
+            )
         return scheme

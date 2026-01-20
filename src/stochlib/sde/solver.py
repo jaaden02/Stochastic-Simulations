@@ -108,21 +108,40 @@ class PathSimulator:
         """
         t_array = np.asarray(t_array, dtype=float)
         if t_array.ndim != 1 or len(t_array) < 2:
-            raise ValueError("t_array must be 1D with at least two entries")
+            raise ValueError(
+                f"t_array must be 1D with at least two entries. "
+                f"Received shape {t_array.shape} with ndim={t_array.ndim}. "
+                f"Example: t_array = np.linspace(0, 1, 101)"
+            )
         dt_array = np.diff(t_array)
         if np.any(dt_array <= 0):
-            raise ValueError("t_array must be strictly increasing")
+            bad_idx = np.where(dt_array <= 0)[0]
+            raise ValueError(
+                f"t_array must be strictly increasing. "
+                f"Found non-positive differences at indices {bad_idx.tolist()}: "
+                f"t[{bad_idx[0]}]={t_array[bad_idx[0]]}, "
+                f"t[{bad_idx[0]+1}]={t_array[bad_idx[0]+1]}. "
+                f"Use np.sort(np.unique(t_array)) or np.linspace() to fix."
+            )
 
         x0_arr = np.asarray(x0, dtype=float)
         if x0_arr.ndim == 1:
             if n_paths is None:
-                raise ValueError("n_paths required when x0 is 1D")
+                raise ValueError(
+                    f"n_paths required when x0 is 1D (shape {x0_arr.shape}). "
+                    f"Pass either: n_paths=100, or x0 with shape (n_paths, dim) "
+                    f"e.g., x0=np.random.normal(size=(100, {x0_arr.shape[0]}))"
+                )
             x = np.broadcast_to(x0_arr, (n_paths, x0_arr.shape[0])).astype(float)
         elif x0_arr.ndim == 2:
             x = x0_arr.copy()
             n_paths = x.shape[0]
         else:
-            raise ValueError("x0 must be shape (dim,) or (n_paths, dim)")
+            raise ValueError(
+                f"x0 must be shape (dim,) or (n_paths, dim), got shape {x0_arr.shape}. "
+                f"Scalar: x0 = np.array([1.0]) (shape: (1,)). "
+                f"Ensemble: x0 = np.random.normal(size=(100, 1)) (shape: (100, 1))"
+            )
 
         dim = x.shape[1]
         stepper = self._get_stepper(dim)
@@ -130,7 +149,9 @@ class PathSimulator:
 
         # Boundary tracking
         alive = np.ones(n_paths, dtype=bool)  # all paths start alive
-        ever_exited = np.zeros(n_paths, dtype=bool)  # track if path ever exited (for "reject" mode)
+        ever_exited = np.zeros(
+            n_paths, dtype=bool
+        )  # track if path ever exited (for "reject" mode)
         exit_times = np.full(n_paths, np.nan)  # time when each path exited
 
         paths = None
@@ -155,7 +176,9 @@ class PathSimulator:
                 if self.boundary_mode == "reflect":
                     # Reflect paths at boundaries
                     x = self._apply_reflection(x)
-                    exited_now = np.zeros(n_paths, dtype=bool)  # no paths "exit" with reflection
+                    exited_now = np.zeros(
+                        n_paths, dtype=bool
+                    )  # no paths "exit" with reflection
                 else:
                     exited_now = self._check_boundaries(x)
                     ever_exited |= exited_now
@@ -267,7 +290,9 @@ class PathSimulator:
         if self.scheme == "milstein":
 
             def _step(x, t, dt):
-                return milstein_step(x, drift_fn, diffusion_fn, diffusion_jac, t, dt, self.rng)
+                return milstein_step(
+                    x, drift_fn, diffusion_fn, diffusion_jac, t, dt, self.rng
+                )
 
         else:
 

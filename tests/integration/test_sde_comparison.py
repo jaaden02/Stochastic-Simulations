@@ -1,6 +1,6 @@
 import numpy as np
 from stochlib.setup import Grid
-from stochlib.sde.comparison import compare_distributions
+from stochlib.results import compare_distributions
 
 
 def normalize_pdf(f, grid):

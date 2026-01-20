@@ -253,7 +253,14 @@ class SimulationEngine:
                 logger.info("No TTY available; proceeding without prompt.")
 
         if not report.is_stable:
-            raise ValueError(f"Stability Error: dt={dt_user:.2e} > dt_max={report.dt_max:.2e}")
+            raise ValueError(
+                f"Stability Error: dt={dt_user:.2e} exceeds dt_max={report.dt_max:.2e}. "
+                f"Solutions: "
+                f"(1) Reduce dt (e.g., dt={report.dt_max*0.9:.2e}), "
+                f"(2) Use finer grid (more grid points), "
+                f"(3) Reduce drift/diffusion magnitude. "
+                f"See DEBUGGING.md for stability analysis."
+            )
         logger.debug("Stability OK: dt=%.3e (dt_max=%.3e)", dt_user, report.dt_max)
 
         # C. THE EXECUTION PHASE
@@ -273,7 +280,14 @@ class SimulationEngine:
             logger.debug("Using provided diagnostics instance")
 
         return self._time_loop(
-            f0, t_array, solver, save_interval, diagnostics, all_reports, save_reports, report_file
+            f0,
+            t_array,
+            solver,
+            save_interval,
+            diagnostics,
+            all_reports,
+            save_reports,
+            report_file,
         )
 
     def _time_loop(
@@ -324,7 +338,12 @@ class SimulationEngine:
 
         # Setup progress bar if available
         iterator = (
-            tqdm(range(1, len(t_array)), desc="Simulating", unit="step", disable=not HAS_TQDM)
+            tqdm(
+                range(1, len(t_array)),
+                desc="Simulating",
+                unit="step",
+                disable=not HAS_TQDM,
+            )
             if HAS_TQDM
             else range(1, len(t_array))
         )
@@ -359,7 +378,8 @@ class SimulationEngine:
             # Update progress bar with current time and mass
             if HAS_TQDM:
                 iterator.set_postfix(
-                    {"t": f"{t_curr:.4f}", "mass": f"{metrics['mass']:.3e}"}, refresh=True
+                    {"t": f"{t_curr:.4f}", "mass": f"{metrics['mass']:.3e}"},
+                    refresh=True,
                 )
 
         elapsed_time = time.time() - start_time

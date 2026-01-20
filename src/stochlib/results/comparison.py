@@ -1,15 +1,23 @@
-"""Comparison tools for Fokker-Planck PDE vs SDE path simulations."""
+"""Comparison utilities for multiple simulation results.
 
+Provides tools for comparing Fokker-Planck PDEs vs SDE/deterministic paths,
+computing distribution metrics, and analyzing ensemble statistics.
+"""
+
+from __future__ import annotations
+
+from typing import List, Dict, Optional, Any, TYPE_CHECKING
 import numpy as np
-from typing import Dict, Any, Optional
-from ..setup import Grid
+
+if TYPE_CHECKING:
+    pass
 
 Array = np.ndarray
 
 
 def paths_to_histogram(
     paths: Array,
-    grid: Grid,
+    grid: Any,
     time_idx: int = -1,
     alive_mask: Optional[Array] = None,
 ) -> Array:
@@ -71,7 +79,7 @@ def paths_to_histogram(
 def compare_distributions(
     f_fp: Array,
     f_paths: Array,
-    grid: Grid,
+    grid: Any,
 ) -> Dict[str, float]:
     """Compare Fokker-Planck and path-based distributions.
 
@@ -121,7 +129,7 @@ def compare_distributions(
 
 def compare_moments(
     f_fp: Array,
-    grid: Grid,
+    grid: Any,
     mean_paths: Array,
     var_paths: Array,
 ) -> Dict[str, Any]:
@@ -171,3 +179,92 @@ def compare_moments(
         "mean_rel_error": np.abs(mean_fp - mean_paths) / (np.abs(mean_fp) + 1e-12),
         "var_rel_error": np.abs(var_fp - var_paths) / (np.abs(var_fp) + 1e-12),
     }
+
+
+class ResultComparison:
+    """Compare multiple SimulationResult objects.
+
+    Enables side-by-side analysis of FP, SDE, and deterministic solutions.
+    """
+
+    def __init__(self, results: List[Any], labels: Optional[List[str]] = None):
+        """Initialize comparison.
+
+        Parameters
+        ----------
+        results : list of SimulationResult
+            Results to compare
+        labels : list of str, optional
+            Custom labels for each result. If None, uses solver_type.
+        """
+        if len(results) < 2:
+            raise ValueError("Need at least 2 results to compare")
+
+        self.results = results
+        self.labels = labels or [r.solver_type for r in results]
+
+        if len(self.labels) != len(self.results):
+            raise ValueError("Number of labels must match number of results")
+
+    def differences(self) -> Dict[str, np.ndarray]:
+        """Compute pairwise differences between results.
+
+        Returns
+        -------
+        dict
+            Keys like '0-1', '0-2', etc. with difference metrics
+        """
+        raise NotImplementedError("differences() in development")
+
+    def ensemble_agreement(self) -> Dict[str, float]:
+        """Check agreement between solvers (FP vs SDE variance, etc.).
+
+        Returns
+        -------
+        dict
+            Metrics like 'wasserstein_distance', 'mean_absolute_error', etc.
+        """
+        raise NotImplementedError("ensemble_agreement() in development")
+
+    def plot_comparison_1d(self, axis: int = 0, time_idx: Optional[int] = None):
+        """Compare 1D marginals across solvers.
+
+        Parameters
+        ----------
+        axis : int
+            Which spatial axis to marginalize over (0, 1, 2)
+        time_idx : int, optional
+            Which time index to show. If None, shows final time.
+        """
+        raise NotImplementedError("plot_comparison_1d() in development")
+
+    def plot_comparison_2d(self, axes: tuple = (0, 1), time_idx: Optional[int] = None):
+        """Compare 2D slices across solvers.
+
+        Parameters
+        ----------
+        axes : tuple
+            Which two spatial axes to show
+        time_idx : int, optional
+            Which time index. If None, shows final time.
+        """
+        raise NotImplementedError("plot_comparison_2d() in development")
+
+    def summary_table(self) -> Dict[str, Dict[str, Any]]:
+        """Generate summary statistics table for all results.
+
+        Returns
+        -------
+        dict
+            Keys are solver labels, values are dicts of statistics
+        """
+        summary = {}
+        for label, result in zip(self.labels, self.results):
+            summary[label] = {
+                "solver_type": result.solver_type,
+                "t_final": result.t_final,
+                "duration": result.duration,
+                "n_steps": result.n_steps,
+                "grid_shape": (result.grid.shape if hasattr(result.grid, "shape") else None),
+            }
+        return summary

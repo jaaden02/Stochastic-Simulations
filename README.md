@@ -8,6 +8,14 @@ A Python library for modeling stochastic processes through **Fokker-Planck PDEs*
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+## Background & Motivation
+
+This library originated from research on stochastic dynamics in marine phytoplankton layers. The concepts and mathematical framework are detailed in:
+
+📊 [**Stochastic Dynamics in Phytoplankton Layers** (Presentation)](docs/presentation/Stochastic%20Dynamics%20in%20Phytoplankton%20Layers.pdf)
+
+This presentation outlines the biological motivation and mathematical foundations that led to the development of StochLib.
+
 ## Features
 
 - **Fokker-Planck PDE Solver**: High-performance numerical solution of forward Fokker-Planck equations for probability evolution
@@ -120,6 +128,22 @@ We provide 7 comprehensive Jupyter notebooks demonstrating all features:
 5. Compare approaches in `05_fp_vs_sde_comparison`
 
 See [examples/README.md](examples/README.md) for detailed notebook descriptions and usage patterns.
+
+## Documentation
+
+Complete API documentation is available in HTML format. Build and view it with:
+
+```bash
+cd docs_build
+make html
+open build/html/index.html
+```
+
+The documentation includes:
+- **Full API Reference** - All modules, classes, and functions with docstrings
+- **Source Code Links** - Navigate directly to implementation
+- **Type Hints** - Complete type information for all APIs
+- **10 Module Sections** - setup, boundary_conditions, sde, deterministic, fokker_planck, results, and utilities
 
 ## Core API
 

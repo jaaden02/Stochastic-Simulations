@@ -1,8 +1,21 @@
-"""Comparison plots for deterministic solutions."""
+"""Comparison plots for deterministic solutions.
 
+.. deprecated::
+    Comparison utilities now live in stochlib.results module.
+    Consider using ResultComparison for unified cross-solver comparisons.
+"""
+
+import warnings
 from typing import Optional
 import numpy as np
 import matplotlib.pyplot as plt
+
+warnings.warn(
+    "stochlib.deterministic.plotting.comparison is deprecated. "
+    "Use stochlib.results.ResultComparison for unified comparisons.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 
 def plot_comparison_with_exact(

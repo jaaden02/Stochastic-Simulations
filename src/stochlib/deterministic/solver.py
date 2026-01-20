@@ -87,13 +87,27 @@ class DeterministicPDESolver:
     def _validate_inputs(self):
         """Validate solver inputs."""
         if self.boundary_mode not in ["none", "periodic", "absorb", "reflect"]:
-            raise ValueError(f"Unknown boundary_mode: {self.boundary_mode}")
+            raise ValueError(
+                f"Unknown boundary_mode: '{self.boundary_mode}'. "
+                f"Valid modes: 'none', 'periodic', 'absorb', 'reflect'. "
+                f"- 'none': No boundary conditions. "
+                f"- 'periodic': Periodic boundary conditions. "
+                f"- 'absorb': Absorbing boundaries (requires bounds). "
+                f"- 'reflect': Reflecting boundaries (requires bounds)."
+            )
 
         if self.boundary_mode in ["absorb", "reflect"] and self.bounds is None:
-            raise ValueError(f"boundary_mode='{self.boundary_mode}' requires bounds")
+            raise ValueError(
+                f"boundary_mode='{self.boundary_mode}' requires bounds parameter. "
+                f"Pass bounds as tuple (lower, upper), e.g., bounds=(-10.0, 10.0)"
+            )
 
         if self.scheme not in ["auto", "upwind", "lax_wendroff", "beam_warming"]:
-            raise ValueError(f"Unknown scheme: {self.scheme}")
+            raise ValueError(
+                f"Unknown scheme: '{self.scheme}'. "
+                f"Valid schemes: 'auto', 'upwind', 'lax_wendroff', 'beam_warming'. "
+                f"'auto' selects based on grid resolution and stability."
+            )
 
     def choose_scheme(self, dt: float) -> str:
         """Automatically choose numerical scheme based on problem parameters.
@@ -154,7 +168,9 @@ class DeterministicPDESolver:
 
         return u_new
 
-    def _apply_lax_wendroff(self, u: np.ndarray, v: np.ndarray, dt: float) -> np.ndarray:
+    def _apply_lax_wendroff(
+        self, u: np.ndarray, v: np.ndarray, dt: float
+    ) -> np.ndarray:
         """Apply Lax-Wendroff scheme for advection.
 
         Second-order accurate in space and time, stable for CFL ≤ 1.
@@ -165,17 +181,19 @@ class DeterministicPDESolver:
 
         for j in range(1, n_grid - 1):
             # Lax-Wendroff: second-order central difference with diffusion correction
-            flux_plus = 0.5 * v[j] * (u[j + 1] + u[j]) - 0.5 * (v[j] * dt / dx) * v[j] * (
-                u[j + 1] - u[j]
-            )
-            flux_minus = 0.5 * v[j - 1] * (u[j] + u[j - 1]) - 0.5 * (v[j - 1] * dt / dx) * v[
-                j - 1
-            ] * (u[j] - u[j - 1])
+            flux_plus = 0.5 * v[j] * (u[j + 1] + u[j]) - 0.5 * (v[j] * dt / dx) * v[
+                j
+            ] * (u[j + 1] - u[j])
+            flux_minus = 0.5 * v[j - 1] * (u[j] + u[j - 1]) - 0.5 * (
+                v[j - 1] * dt / dx
+            ) * v[j - 1] * (u[j] - u[j - 1])
             u_new[j] = u[j] - (dt / dx) * (flux_plus - flux_minus)
 
         return u_new
 
-    def _apply_beam_warming(self, u: np.ndarray, v: np.ndarray, dt: float) -> np.ndarray:
+    def _apply_beam_warming(
+        self, u: np.ndarray, v: np.ndarray, dt: float
+    ) -> np.ndarray:
         """Apply Beam-Warming scheme for advection.
 
         Second-order upwind scheme, good for smooth solutions.
@@ -187,10 +205,14 @@ class DeterministicPDESolver:
         for j in range(2, n_grid - 1):
             if v[j] > 0:
                 # Second-order upwind from left
-                u_new[j] = u[j] - (dt / dx) * v[j] * (1.5 * u[j] - 2 * u[j - 1] + 0.5 * u[j - 2])
+                u_new[j] = u[j] - (dt / dx) * v[j] * (
+                    1.5 * u[j] - 2 * u[j - 1] + 0.5 * u[j - 2]
+                )
             elif v[j] < 0:
                 # Second-order upwind from right
-                u_new[j] = u[j] - (dt / dx) * v[j] * (-1.5 * u[j] + 2 * u[j + 1] - 0.5 * u[j + 2])
+                u_new[j] = u[j] - (dt / dx) * v[j] * (
+                    -1.5 * u[j] + 2 * u[j + 1] - 0.5 * u[j + 2]
+                )
 
         return u_new
 

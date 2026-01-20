@@ -59,7 +59,10 @@ def sample_from_distribution(
         elif ax == "z":
             grid_ax = grid.z_grid
         else:
-            raise ValueError(f"Unknown axis '{ax}'")
+            raise ValueError(
+                f"Unknown axis '{ax}'. Valid axes for grid sampling: 'x', 'y', 'z'. "
+                f"Check your grid axes and ensure sampling axis matches grid dimensions."
+            )
 
         # Map grid index to position
         samples[:, i] = grid_ax[multi_indices[i]]
